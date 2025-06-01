@@ -1,0 +1,73 @@
+@use "../../../_variables" as *;
+
+window.NotificationCenter {
+  all: unset;
+}
+
+.notification-center-container {
+  background-color: $bg-primary;
+  border-radius: $radius-md;
+  border: $border-width solid $border-primary;
+  min-height: 300px;
+  margin: $spacing-xl;
+
+  // Header
+  .header {
+    padding: $spacing-xl + $spacing-xs $spacing-xl + $spacing-sm $spacing-xl;
+
+    .title {
+      font-size: $font-size-xl + 3px;
+      color: $text-primary;
+    }
+
+    .clear-all-btn,
+    .close-btn {
+        all: unset;
+        font-size: $font-size-sm;
+        padding: $spacing-xs;
+        border-radius: $radius-sm;
+        color: $text-secondary;
+        transition: all $transition-fast;
+
+        &:hover {
+          background-color: $bg-hover;
+          color: $theme-white;
+        }
+    }
+  }
+
+  // Enhanced notification list
+  .notification-list {
+    // Empty state styling
+    .empty-state {
+      padding: $spacing-2xl + $spacing-lg $spacing-2xl;
+      color: $text-secondary;
+
+      icon {
+        font-size: 3em;
+        opacity: 0.5;
+      }
+
+      label {
+        font-size: $font-size-lg + 2px;
+        opacity: 0.8;
+      }
+    }
+  }
+}
+
+/* Scrollbar styling */
+scrollbar {
+  background-color: transparent;
+  margin: 1px;
+}
+
+scrollbar slider {
+  background-color: $text-tertiary;
+  border-radius: $spacing-xs + 1px;
+  min-width: $spacing-xs;
+}
+
+scrollbar slider:hover {
+  background-color: $text-secondary;
+}

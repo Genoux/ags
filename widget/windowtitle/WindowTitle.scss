@@ -1,0 +1,13 @@
+@use "../../variables" as *;
+
+.window-title {
+    box {
+        font-size: $font-size-lg;
+        
+        icon {
+            font-size: $font-size-xl + 2px;
+            color: $text-primary;
+            opacity: 0.8;
+        }
+    }
+} 

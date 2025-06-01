@@ -1,0 +1,176 @@
+@use "./variables" as *;
+@use "./widget/mediaplayer/MediaPlayer.scss";
+@use "./widget/audiocontrols/AudioControls.scss";
+@use "./widget/controlpanel/ControlPanel.scss";
+@use "./widget/workspaces/Workspaces.scss";
+@use "./widget/windowtitle/WindowTitle.scss";
+@use "./widget/notifications/styles/index.scss";
+
+// =============================================================================
+// Imports - Following 7-1 Architecture Pattern
+// =============================================================================
+
+// =============================================================================
+// Base - Foundation styles
+// =============================================================================
+
+// =============================================================================
+// Utils - Mixins and functions
+// =============================================================================
+
+// Common section styling mixin
+@mixin bar-section-base {
+  padding: 0 $spacing-sm;
+}
+
+// Common item styling mixin
+@mixin bar-item-base {
+  border-radius: $radius-sm;
+  border: $border-width solid $border-primary;
+  background: $bg-primary;
+  box-shadow: 0 0 $spacing-2xl $shadow-tertiary;
+}
+
+// Interactive button mixin
+@mixin interactive-button($padding: $spacing-xs) {
+  all: unset;
+  padding: $padding;
+  border-radius: $radius-sm;
+  transition: background-color $transition-normal;
+
+  &:hover {
+    background: $bg-hover;
+  }
+
+  &:active,
+  &.active {
+    background: $bg-active;
+
+    &:hover {
+      background: $bg-active;
+    }
+  }
+}
+
+// Control button variant (for left section)
+@mixin control-button {
+  @include interactive-button($spacing-sm $spacing-lg);
+  
+  &:hover {
+    background: $bg-hover;
+  }
+
+  &:active,
+  &.active {
+    background: $bg-hover;
+
+    &:hover {
+      background: $bg-hover;
+    }
+  }
+}
+
+// Subtle container mixin for consistent backgrounds
+@mixin subtle-container {
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-sm;
+  transition: background-color $transition-normal;
+  
+  &:hover {
+    background: $bg-hover;
+  }
+}
+
+// =============================================================================
+// Layout - Main window and container
+// =============================================================================
+window.Bar {
+  background: transparent;
+  color: $text-primary;
+  font-family: $font-family-primary;
+  font-size: $font-size-md;
+  font-weight: 500;
+}
+
+.bar-container {
+  > .bar-section {
+    margin: $spacing-xs $spacing-md;
+  }
+}
+
+// =============================================================================
+// Components - Bar items and sections
+// =============================================================================
+
+// Common bar item styling
+.bar-item {
+  @include bar-item-base;
+}
+
+// Left Section - Control panel and workspaces
+.bar-left {
+  .control-panel {
+    margin-right: $spacing-sm;
+    button {
+      @include control-button;
+    }
+  }
+
+  .workspaces {
+    padding: $spacing-xs;
+  }
+}
+
+// Center Section - Window title
+.bar-center {
+  padding: 0 $spacing-sm;
+}
+
+// Right Section - Consistent spacing and subtle backgrounds
+.bar-right {
+  padding: $spacing-sm;
+
+  // Add horizontal spacing between items
+  > *:not(:last-child) {
+    @include subtle-container;
+  }
+
+  .time-display {
+    padding: 0 $spacing-sm;
+  }
+
+  button {
+    min-width: $spacing-xl;
+  }
+}
+
+// =============================================================================
+// Theme - Common elements and typography
+// =============================================================================
+window.Bar {
+  button {
+    all: unset;
+  }
+
+  label {
+    color: inherit;
+    font-weight: inherit;
+
+    &.secondary {
+      color: $text-secondary;
+      font-size: $font-size-xs;
+    }
+
+    &.tertiary {
+      color: $text-tertiary;
+      font-size: 9px; // Slightly smaller than xs
+    }
+  }
+
+  separator {
+    background: $separator-primary;
+    min-width: $separator-width;
+    min-height: $spacing-lg;
+    margin: 0 $spacing-sm;
+  }
+}

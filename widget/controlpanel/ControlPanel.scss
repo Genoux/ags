@@ -1,0 +1,37 @@
+// Control Panel Styling
+@use "../../variables" as *;
+
+window.control-panel-window {
+    all: unset;
+    background: transparent;
+    padding: $spacing-lg;
+
+}
+
+box.ControlPanel {
+    font-family: $font-family-primary;
+    background-color: $bg-primary;
+    border-radius: $radius-lg;
+    border: $border-width solid $border-tertiary;
+    min-width: 300px;
+    padding: $spacing-md;
+    margin: $spacing-md;
+
+    box.separator {
+        min-height: $separator-width;
+        background-color: $separator-primary;
+        margin: $spacing-xl 0;
+    }
+
+     > box:not(.separator) {
+        background-color: $bg-tertiary;
+        border-radius: $radius-md;
+
+    }
+
+    box.audio-section{
+        margin: 0;
+        padding: $spacing-md;
+
+    }
+} 

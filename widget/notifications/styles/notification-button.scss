@@ -1,0 +1,48 @@
+@use "../../../_variables" as *;
+
+// =============================================================================
+// Notification Button Styles
+// =============================================================================
+
+.NotificationButton {
+    // Base button styles
+    all: unset;
+    padding: $spacing-sm;
+    border-radius: $radius-sm;
+    min-width: $spacing-xl;
+    transition: background-color $transition-normal;
+    
+    &:hover {
+        background-color: $bg-hover;
+    }
+    
+    &.has-notifications {
+        // Styles when notifications are present
+        .notification-icon {
+            color: $accent-primary;
+        }
+    }
+    
+    .notification-icon {
+        color: $text-primary;
+        transition: color $transition-normal;
+    }
+    
+    .badge-container {
+        margin-left: $spacing-xs;
+        min-width: 0;
+        min-height: 0;
+    }
+    
+    .badge {
+        // Rounded badge styling
+        background-color: $theme-white;
+        color: $theme-base;
+        font-size: $font-size-xs;
+        font-weight: 600;
+        min-width: 16px;
+        min-height: 12px;
+        border-radius: 8px;
+    
+    }
+} 
