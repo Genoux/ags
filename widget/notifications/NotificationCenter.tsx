@@ -92,6 +92,26 @@ function NotificationList() {
                                         notificationStore.markAppAsRead(appName)
                                     }
                                 }}
+                                onActionClick={() => {
+                                    // When an action is clicked, the notification should be dismissed
+                                    // This happens automatically via the "resolved" signal, but we can add
+                                    // additional logic here if needed (like closing the notification center)
+                                    console.log("Action clicked in notification center for:", latestNotification.notification.appName)
+                                    
+                                    // Force dismiss after a short delay if the automatic signal doesn't work
+                                    setTimeout(() => {
+                                        // Check if the notification is still in the store
+                                        const notifications = notificationStore.notifications.get()
+                                        const stillExists = notifications.find(n => n.id === latestNotification.id && !n.dismissed)
+                                        
+                                        if (stillExists) {
+                                            console.log("Notification still exists after action, force dismissing:", latestNotification.id)
+                                            notificationStore.dismiss(latestNotification.id)
+                                        }
+                                    }, 200)
+                                    
+                                    notificationCenterVisible.set(false)
+                                }}
                             />
                         )
                     })

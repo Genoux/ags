@@ -49,7 +49,8 @@ class NotificationStore {
 
         this.notifd.connect("resolved", (_, id) => {
             try {
-                this.dismiss(id)
+                // Use internal flag to prevent recursion
+                this.dismiss(id, true)
             } catch (error) {
                 console.error("Error dismissing notification:", error)
             }
@@ -165,18 +166,23 @@ class NotificationStore {
         this.updateReactiveState()
     }
 
-    public dismiss(id: number): void {
+    public dismiss(id: number, internal: boolean = false): void {
         const notification = this.storedNotifications.find(n => n.id === id)
         if (notification) {
             notification.dismissed = true
             this.dismissedIds.add(id)
             this.saveDismissedIds()
-            // Dismiss the actual notification object
-            try {
-                notification.notification.dismiss()
-            } catch (error) {
-                console.error("Error dismissing notification:", error)
+            
+            // Only dismiss the actual notification object if this is NOT from the "resolved" signal
+            // to prevent recursion
+            if (!internal) {
+                try {
+                    notification.notification.dismiss()
+                } catch (error) {
+                    console.error("Error dismissing notification:", error)
+                }
             }
+            
             this.updateReactiveState()
         }
     }
