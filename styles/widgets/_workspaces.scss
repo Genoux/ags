@@ -1,5 +1,9 @@
-// Workspaces widget styles - subtle gray theme
-@use "../../variables" as *;
+@use "../abstracts/variables" as *;
+@use "../abstracts/mixins" as *;
+
+// =============================================================================
+// Workspaces Widget Styling
+// =============================================================================
 
 .workspaces {
     .workspace-separator {

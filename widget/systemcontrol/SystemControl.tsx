@@ -1,6 +1,7 @@
 import { Gtk } from "astal/gtk3"
 import { GLib } from "astal"
-import { Variable, bind } from "astal"
+import { bind } from "astal"
+import { showConfirmation, ConfirmationOverlay, confirmationVisible } from "./ConfirmationOverlay"
 
 // =============================================================================
 // System Control Widget
@@ -12,17 +13,6 @@ interface SystemControlButtonProps {
     action: () => void
     className?: string
 }
-
-interface ConfirmationData {
-    title: string
-    message: string
-    onConfirm: () => void
-    onCancel?: () => void
-}
-
-// State for inline confirmation
-const showInlineConfirmation = Variable(false)
-const confirmationData = Variable<ConfirmationData | null>(null)
 
 function SystemControlButton({ icon, tooltip, action, className = "" }: SystemControlButtonProps) {
     return (
@@ -36,50 +26,6 @@ function SystemControlButton({ icon, tooltip, action, className = "" }: SystemCo
     )
 }
 
-function InlineConfirmationOverlay() {
-    const data = confirmationData.get()
-    if (!data) return <box />
-
-    return (
-        <box className="inline-confirmation-overlay" vertical spacing={8}>
-            <box className="confirmation-header" vertical spacing={4}>
-                <label 
-                    className="confirmation-title" 
-                    label={data.title}
-                    halign={Gtk.Align.CENTER}
-                />
-                <label 
-                    className="confirmation-message" 
-                    label={data.message}
-                    halign={Gtk.Align.CENTER}
-                />
-            </box>
-            
-            <box className="confirmation-buttons" spacing={8} halign={Gtk.Align.CENTER}>
-                <button 
-                    className="confirmation-btn cancel-btn"
-                    onClicked={() => {
-                        showInlineConfirmation.set(false)
-                        if (data.onCancel) data.onCancel()
-                        confirmationData.set(null)
-                    }}>
-                    <label label="No" />
-                </button>
-                
-                <button 
-                    className="confirmation-btn confirm-btn" 
-                    onClicked={() => {
-                        showInlineConfirmation.set(false)
-                        data.onConfirm()
-                        confirmationData.set(null)
-                    }}>
-                    <label label="Yes" />
-                </button>
-            </box>
-        </box>
-    )
-}
-
 function executeSystemCommand(command: string, description: string) {
     try {
         console.log(`Executing ${description}...`)
@@ -89,24 +35,19 @@ function executeSystemCommand(command: string, description: string) {
     }
 }
 
-function showInlineConfirmationDialog(data: ConfirmationData) {
-    confirmationData.set(data)
-    showInlineConfirmation.set(true)
-}
-
 function handleShutdown() {
-    showInlineConfirmationDialog({
-        title: "Shutdown",
-        message: "Are you sure?",
+    showConfirmation({
+        title: "Shutdown System",
+        message: "Are you sure you want to shutdown?",
         onConfirm: () => executeSystemCommand("systemctl poweroff", "shutdown system"),
         onCancel: () => console.log("Shutdown cancelled")
     })
 }
 
 function handleSleep() {
-    showInlineConfirmationDialog({
-        title: "Sleep",
-        message: "Suspend system?",
+    showConfirmation({
+        title: "Suspend System", 
+        message: "Put the system to sleep?",
         onConfirm: () => executeSystemCommand("systemctl suspend", "suspend system"),
         onCancel: () => console.log("Sleep cancelled")
     })
@@ -138,7 +79,7 @@ export default function SystemControl() {
         <box className="system-control-container" vertical spacing={8}>
             {/* Main system control buttons or confirmation overlay */}
             <stack
-                shown={bind(showInlineConfirmation).as(show => show ? "confirmation" : "controls")}
+                shown={bind(confirmationVisible).as(show => show ? "confirmation" : "controls")}
                 transitionType={Gtk.StackTransitionType.SLIDE_UP_DOWN}
                 transitionDuration={200}
             >
@@ -154,7 +95,7 @@ export default function SystemControl() {
                 </box>
                 
                 <box name="confirmation" className="confirmation-container">
-                    <InlineConfirmationOverlay />
+                    <ConfirmationOverlay />
                 </box>
             </stack>
         </box>

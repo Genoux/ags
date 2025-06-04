@@ -1,0 +1,36 @@
+@use "../abstracts/variables" as *;
+@use "../abstracts/mixins" as *;
+
+// =============================================================================
+// Control Panel Widget Styling
+// =============================================================================
+
+window.control-panel-window {
+    @include window-base;
+    padding: $spacing-lg;
+}
+
+box.ControlPanel {
+    @include panel-base;
+    min-width: 300px;
+    margin: $spacing-md;
+
+    box.notification-center-container {
+        border: none;
+        min-width: 300px;
+        background-color: transparent;
+    }
+    box.notification-section {
+        @include section-container;
+        min-width: 300px;
+        border: none;
+
+        .notification-container {
+            border: none
+        }
+
+    }
+    box.audio-section {
+        @include section-container;
+    }
+} 

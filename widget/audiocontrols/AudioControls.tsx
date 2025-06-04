@@ -48,7 +48,7 @@ function AudioControlsComponent(): Gtk.Widget {
         }
     })
     
-    return <box className="AudioPanel">
+    return <box className="AudioPanel" spacing={8}>
         <button
             onClicked={() => {
                 speaker.mute = !speaker.mute

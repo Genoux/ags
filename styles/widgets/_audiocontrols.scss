@@ -1,49 +1,28 @@
-@use "../../variables" as *;
+@use "../abstracts/variables" as *;
+@use "../abstracts/mixins" as *;
+
+// =============================================================================
+// Audio Controls Widget Styling
+// =============================================================================
 
 window {
-    all: unset;
+    @include window-base;
 }
 
 box.AudioPanel {
     font-family: $font-family-primary;
 
     button {
-        all: unset;
-        min-width: $spacing-xs;
-        min-height: $spacing-xs;
-        padding: $spacing-sm;
-        margin-right: $spacing-sm;
-        border-radius: $radius-sm;
+        @include control-button;
         font-size: $spacing-xl;
-        border: $border-width solid $border-primary;
-        background-color: $bg-primary;
-        transition: background-color $transition-fast;
-        
-        &:hover {
-            background-color: $bg-hover;
-        }
     }
     
     scale {
-        padding: 0;
+        @include scale-base;
         margin-right: $spacing-sm;
-
-        trough {
-            min-height: $spacing-md;
-        }
-
-        highlight {
-            background-color: $text-primary;
-        }
-
-        slider {
-            all: unset;
-        }
     }
     
     label.volume-label {
-        font-size: $font-size-sm;
-        opacity: 0.7;
-        min-width: 35px;
+        @include volume-label;
     }
 } 

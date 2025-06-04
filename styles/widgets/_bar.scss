@@ -1,0 +1,102 @@
+@use "../abstracts/variables" as *;
+@use "../abstracts/mixins" as *;
+
+// =============================================================================
+// Layout - Main window and container
+// =============================================================================
+
+window.Bar {
+  background: transparent;
+  color: $text-primary;
+  font-family: $font-family-primary;
+  font-size: $font-size-md;
+  font-weight: 500;
+}
+
+.bar-container {
+  > .bar-section {
+    margin: $spacing-xs $spacing-md;
+  }
+}
+
+// =============================================================================
+// Components - Bar items and sections
+// =============================================================================
+
+// Common bar item styling
+.bar-item {
+  @include bar-item-base;
+}
+
+// Left Section - Control panel and workspaces
+.bar-left {
+  .control-panel {
+    margin-right: $spacing-sm;
+
+    button {
+      padding: 0 $spacing-lg;
+
+      &:hover {
+        background: $bg-hover;
+      }
+
+      &:active {
+        background: $bg-active;
+      }
+    }
+  }
+
+  .workspaces {
+    padding: $spacing-xs;
+  }
+}
+
+// Center Section - Window title
+.bar-center {
+  padding: 0 $spacing-sm;
+}
+
+// Right Section - Consistent spacing and subtle backgrounds
+.bar-right {
+  padding: $spacing-sm;
+
+  // Add horizontal spacing between items
+  > *:not(:last-child) {
+    @include subtle-container;
+  }
+
+  .time-display {
+    padding: 0 $spacing-sm;
+  }
+
+  button {
+    min-width: $spacing-xl;
+  }
+}
+
+// =============================================================================
+// Theme - Common elements and typography
+// =============================================================================
+
+window.Bar {
+  button {
+    all: unset;
+  }
+
+  label {
+    color: inherit;
+    font-weight: inherit;
+
+    &.secondary {
+      @include label-secondary;
+    }
+
+    &.tertiary {
+      @include label-tertiary;
+    }
+  }
+
+  separator {
+    @include separator;
+  }
+}

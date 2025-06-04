@@ -4,7 +4,7 @@ import { audioControls } from "../audiocontrols";
 import { bind } from "astal";
 import { createWindowManager } from "../WindowHelper";
 import { NotificationCenterWidget } from "../notifications"
-import SystemControl from "../systemcontrol/SystemControl"
+import SystemControl from "../systemcontrol"
 
 const controlPanel = createWindowManager({
   name: "control-panel",
@@ -17,7 +17,7 @@ const controlPanel = createWindowManager({
 // Main export - can return individual widgets or combined
 function ControlPanel() {
   return (
-    <box className="ControlPanel" vertical spacing={6}>
+    <box className="ControlPanel" vertical spacing={4}>
       <box className="notification-section">
         <NotificationCenterWidget />
       </box>
