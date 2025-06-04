@@ -1,11 +1,11 @@
 @use "./variables" as *;
-@use "./widget/mediaplayer/MediaPlayer.scss";
-@use "./widget/audiocontrols/AudioControls.scss";
-@use "./widget/controlpanel/ControlPanel.scss";
-@use "./widget/workspaces/Workspaces.scss";
-@use "./widget/windowtitle/WindowTitle.scss";
-@use "./widget/notifications/styles/index.scss";
-@use "./widget/systemcontrol/SystemControl.scss";
+
+// Widget styles
+@use 'widgets/audiocontrols';
+@use 'widgets/mediaplayer'; 
+@use 'widgets/notifications';
+@use 'widgets/windowtitle';
+@use 'widgets/workspaces';
 
 // =============================================================================
 // Imports - Following 7-1 Architecture Pattern

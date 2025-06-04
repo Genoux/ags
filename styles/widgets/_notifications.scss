@@ -1,0 +1,280 @@
+@forward "notification-center";
+@forward "notification-item";
+@forward "notification-button";@use "../../../_variables" as *;
+
+// =============================================================================
+// Notification Button Styles
+// =============================================================================
+
+.NotificationButton {
+    // Base button styles
+    all: unset;
+    padding: $spacing-sm;
+    border-radius: $radius-sm;
+    min-width: $spacing-xl;
+    transition: background-color $transition-normal;
+    
+    &:hover {
+        background-color: $bg-hover;
+    }
+    
+    &.has-notifications {
+        // Styles when notifications are present
+        .notification-icon {
+            color: $accent-primary;
+        }
+    }
+    
+    .notification-icon {
+        color: $text-primary;
+        transition: color $transition-normal;
+    }
+    
+    .badge-container {
+        margin-left: $spacing-xs;
+        min-width: 0;
+        min-height: 0;
+    }
+    
+    .badge {
+        // Rounded badge styling
+        background-color: $theme-white;
+        color: $theme-base;
+        font-size: $font-size-xs;
+        font-weight: 600;
+        min-width: 16px;
+        min-height: 12px;
+        border-radius: 8px;
+    
+    }
+} @use "../../../_variables" as *;
+
+window.NotificationCenter {
+  all: unset;
+}
+
+.notification-center-container {
+  background-color: $bg-primary;
+  min-height: 300px;
+  min-width: 300px;
+  border-left: $border-width solid $border-primary;
+  border-bottom-left-radius: $radius-lg;
+ 
+  // Header
+  .header {
+    padding: $spacing-xl + $spacing-xs $spacing-xl + $spacing-sm $spacing-xl;
+    border-bottom: $border-width solid $border-primary;
+
+    .title {
+      font-size: $font-size-xl + 3px;
+      color: $text-primary;
+    }
+
+    .clear-all-btn,
+    .close-btn {
+        all: unset;
+        font-size: $font-size-sm;
+        padding: $spacing-xs;
+        border-radius: $radius-sm;
+        color: $text-secondary;
+        transition: all $transition-fast;
+
+        &:hover {
+          background-color: $bg-hover;
+          color: $theme-white;
+        }
+    }
+  }
+
+  // Enhanced notification list
+  .notification-list {
+    // Remove any default scrollable borders/backgrounds
+    background: transparent;
+    border: none;
+    padding: $spacing-md;
+    
+    // Empty state styling
+    .empty-state {
+      color: $theme-white;
+
+      icon {
+        font-size: 1.5em;
+        opacity: 0.5;
+      }
+
+      label {
+        font-size: $font-size-lg;
+        opacity: 0.3;
+      }
+    }
+  }
+
+  // Target scrollable widget specifically
+  scrolled,
+  scrolledwindow {
+    all: unset;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+  }
+
+  // Target any viewport inside
+  viewport {
+    all: unset;
+    background: transparent;
+    border: none;
+  }
+}
+
+/* Scrollbar styling */
+scrollbar {
+  all: unset;
+  background-color: transparent;
+  margin: 1px;
+}
+
+scrollbar slider {
+  background-color: $text-tertiary;
+  border-radius: $spacing-xs + 1px;
+  min-width: $spacing-xs;
+}
+
+scrollbar slider:hover {
+  background-color: $text-secondary;
+}
+@use "../../../_variables" as *;
+
+// =============================================================================
+// Clean Minimalist Notification Item Styles
+// =============================================================================
+
+// Popup window styling
+window.NotificationPopup {
+  all: unset;
+  background: transparent;
+}
+
+// Regular notification popups window
+window.NotificationPopups {
+  all: unset;
+}
+
+eventbox.notification {
+  all: unset;
+
+
+  > box {
+    min-width: 300px;
+    font-family: $font-family-primary;
+    border-radius: $radius-sm;
+    background-color: $bg-quaternary;
+    border: $border-width solid $border-primary;
+    transition: all $transition-normal;
+    padding: $spacing-lg 0 ;
+  }
+
+  // Subtle read state
+  &.read > box {
+    opacity: 0.7;
+    background-color: $bg-secondary;
+  }
+
+  // Clean header
+  .notification-header {
+    padding: 0 $spacing-lg;
+
+    .app-icon {
+      min-width: 16px;
+      min-height: 16px;
+      color: $theme-white;
+    }
+
+    .app-name {
+      font-weight: 500;
+      color: $text-primary;
+      font-size: $font-size-sm;
+    }
+
+    .timestamp {
+      font-size: $font-size-xs;
+      color: $text-secondary;
+      opacity: 0.8;
+    }
+
+    .action-buttons {
+      button {
+        all: unset;
+        padding: $spacing-xs;
+        border-radius: $radius-sm;
+        color: $text-secondary;
+        transition: all $transition-fast;
+
+        &:hover {
+          background-color: $bg-hover;
+          color: $theme-white;
+        }
+      }
+    }
+  }
+
+  // Clean separator
+  .separator {
+    min-height: $separator-width;
+    background-color: $separator-primary;
+    opacity: 0.3;
+  }
+
+  // Content styling
+  .notification-content {
+    padding: 0 $spacing-lg;
+
+    .notification-image {
+      border-radius: $radius-sm;
+      margin-right: $spacing-md;
+      min-width: 48px;
+      min-height: 48px;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .text-content {
+      min-width: 0;
+
+      .summary {
+        font-size: $font-size-md;
+        font-weight: 500;
+        color: $text-primary;
+        margin-bottom: $spacing-xs;
+      }
+
+      .body {
+        font-size: $font-size-sm;
+        color: $text-secondary;
+        opacity: 0.9;
+      }
+    }
+  }
+
+  // Action buttons
+  .notification-actions {
+    padding: 0 $spacing-lg $spacing-md;
+
+    .action-button {
+      all: unset;
+      padding: $spacing-xs $spacing-md;
+      border-radius: $radius-sm;
+      background-color: $bg-tertiary;
+      border: $border-width solid $border-primary;
+      color: $text-primary;
+      font-size: $font-size-xs;
+      margin-right: $spacing-sm;
+      transition: all $transition-fast;
+
+      &:hover {
+        background-color: $bg-hover;
+        border-color: $accent-primary;
+        color: $theme-white;
+      }
+    }
+  }
+}

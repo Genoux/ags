@@ -1,5 +1,5 @@
 import { App } from "astal/gtk3"
-import style from "./style.scss"
+import style from "./styles/main.scss"
 import Bar from "./widget/Bar"
 import NotificationCenter from "./widget/notifications/NotificationCenter"
 import NotificationPopups from "./widget/notifications/components/NotificationPopup"
