@@ -11,9 +11,6 @@ export default function NotificationButton({
     return (
         <button
             className={`NotificationButton ${className} ${bind(notificationStore.totalCount).as((count: number) => count > 0 ? "has-notifications" : "")}`}
-            tooltip_text={bind(notificationStore.totalCount).as((count: number) => 
-                count > 0 ? `${count} notifications` : "No notifications"
-            )}
             onClicked={() => {
                 notificationCenterVisible.set(!notificationCenterVisible.get())
             }}>

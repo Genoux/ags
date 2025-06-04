@@ -4,11 +4,16 @@ import { notificationStore } from "./store"
 import type { GroupedNotification } from "./store"
 import NotificationItem from "./components/NotificationItem"
 import { createWindowManager } from "../WindowHelper"
+import { dismissAllPopups } from "./components/NotificationPopup"
 
 // Global variable to control visibility
 export const notificationCenterVisible = Variable(false)
 
-function NotificationCenterHeader() {
+interface NotificationCenterHeaderProps {
+    showCloseButton?: boolean
+}
+
+function NotificationCenterHeader({ showCloseButton = true }: NotificationCenterHeaderProps) {
     return (
         <box className="header">
             <label 
@@ -21,7 +26,7 @@ function NotificationCenterHeader() {
             <label 
                 className="count"
                 label={bind(notificationStore.unreadCount).as((count: number) => 
-                    count > 0 ? `${count} unread` : "No new notifications"
+                    count > 0 ? `${count}` : ""
                 )}
             />
             
@@ -32,29 +37,39 @@ function NotificationCenterHeader() {
                 <label label="Clear All" />
             </button>
             
-            <button 
-                className="close-btn"
-                tooltip_text="Close notification center"
-                onClicked={() => notificationCenterVisible.set(false)}>
-                <icon icon="window-close-symbolic" />
-            </button>
+            {showCloseButton && (
+                <button 
+                    className="close-btn"
+                    tooltip_text="Close notification center"
+                    onClicked={() => notificationCenterVisible.set(false)}>
+                    <icon icon="window-close-symbolic" />
+                </button>
+            )}
         </box>
     )
 }
 
-function NotificationList() {
+// Export list component for reuse  
+export function NotificationList() {
     return (
         <scrollable
             className="notification-list"
             vexpand
+            hexpand
             hscroll={Gtk.PolicyType.NEVER}
             vscroll={Gtk.PolicyType.AUTOMATIC}>
             <box vertical>
                 {bind(notificationStore.groupedNotifications).as((groups: GroupedNotification[]) => {
                     if (groups.length === 0) {
                         return (
-                            <box className="empty-state">
-                                <icon icon="notifications-disabled-symbolic" />
+                            <box 
+                                className="empty-state" 
+                                valign={Gtk.Align.CENTER} 
+                                halign={Gtk.Align.CENTER} 
+                                vexpand
+                                hexpand
+                                vertical 
+                                spacing={6}>
                                 <label label="No notifications" />
                             </box>
                         )
@@ -127,23 +142,34 @@ const notificationCenterManager = createWindowManager({
     className: "NotificationCenter",
     content: (
         <box className="notification-center-container" vertical>
-            <NotificationCenterHeader />
+            <NotificationCenterHeader showCloseButton={true} />
             <NotificationList />
         </box>
     ),
-    anchor: Astal.WindowAnchor.TOP | Astal.WindowAnchor.RIGHT,
-    closeOnClickOutside: true, 
+    anchor: Astal.WindowAnchor.TOP | Astal.WindowAnchor.RIGHT | Astal.WindowAnchor.BOTTOM,
     globalToggleName: "toggleNotificationCenter"
 })
 
 // Sync the window manager visibility with our variable
 notificationCenterVisible.subscribe(() => {
     if (notificationCenterVisible.get()) {
+        // Dismiss all popup notifications when opening the center
+        dismissAllPopups()
         notificationCenterManager.show()
     } else {
         notificationCenterManager.hide()
     }
 })
+
+// Export a standalone component for embedding in control panels (no window wrapper)
+export function NotificationCenterWidget() {
+    return (
+        <box className="notification-center-container" vertical hexpand vexpand>
+            <NotificationCenterHeader showCloseButton={false} />
+            <NotificationList />
+        </box>
+    )
+}
 
 export default function NotificationCenter(gdkmonitor: Gdk.Monitor) {
     return notificationCenterManager.createWindow()

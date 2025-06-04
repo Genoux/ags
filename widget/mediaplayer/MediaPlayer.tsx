@@ -230,7 +230,7 @@ export function MediaControls({
 // MediaPlayer component (built from pure UI functions)
 function MediaPlayer({ player }: { player: Mpris.Player }) {
   const coverArtBackground = bind(player, "coverArt").as((c) => 
-    c ? `background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('${c}'); background-size: cover; background-position: center;` : ""
+    c ? `background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.7)), url('${c}'); background-size: cover; background-position: center;` : ""
   );
 
   return (

@@ -1,0 +1,78 @@
+@use "../../_variables" as *;
+
+// =============================================================================
+// Confirmation Overlay Styling
+// =============================================================================
+
+window.confirmation-overlay-window {
+    all: unset;
+    background: transparent;
+}
+
+.confirmation-overlay {
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    
+    .confirmation-container {
+        padding: $spacing-2xl;
+        
+        .confirmation-dialog {
+            background-color: $bg-primary;
+            border-radius: $radius-lg;
+            padding: $spacing-2xl;
+            min-width: 320px;
+            max-width: 400px;
+            border: $border-width solid $border-secondary;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            
+            .dialog-header {
+                .dialog-title {
+                    font-size: $font-size-xl;
+                    font-weight: 600;
+                    color: $text-primary;
+                    text-align: center;
+                }
+                
+                .dialog-message {
+                    font-size: $font-size-md;
+                    color: $text-secondary;
+                    text-align: center;
+                }
+            }
+            
+            .dialog-buttons {
+                .dialog-btn {
+                    all: unset;
+                    padding: $spacing-md $spacing-xl;
+                    border-radius: $radius-sm;
+                    font-size: $font-size-md;
+                    font-weight: 500;
+                    transition: all $transition-fast;
+                    min-width: 80px;
+                    text-align: center;
+                    
+                    &.cancel-btn {
+                        background-color: $bg-tertiary;
+                        color: $text-secondary;
+                        border: $border-width solid $border-primary;
+                        
+                        &:hover {
+                            background-color: $bg-hover;
+                            color: $text-primary;
+                        }
+                    }
+                    
+                    &.confirm-btn {
+                        background-color: $error-primary;
+                        color: $theme-white;
+                        
+                        &:hover {
+                            background-color: $error-hover;
+                        }
+                    }
+                }
+            }
+        }
+    }
+} 

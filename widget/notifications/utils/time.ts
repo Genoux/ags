@@ -4,8 +4,34 @@ import { GLib } from "astal"
 // Time Formatting Utilities
 // =============================================================================
 
-export const formatTime = (time: number, format = "%H:%M"): string => 
-    GLib.DateTime.new_from_unix_local(time).format(format)!
+export const formatTime = (time: number, format = "%H:%M"): string => {
+    try {
+        // Convert milliseconds to seconds for GLib.DateTime
+        const timeInSeconds = Math.floor(time / 1000)
+        const dateTime = GLib.DateTime.new_from_unix_local(timeInSeconds)
+        
+        if (!dateTime) {
+            // Fallback to JavaScript Date if GLib fails
+            const date = new Date(time)
+            return date.toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: false
+            })
+        }
+        
+        return dateTime.format(format)!
+    } catch (error) {
+        console.error("Error formatting time:", error)
+        // Fallback formatting
+        const date = new Date(time)
+        return date.toLocaleTimeString('en-US', { 
+            hour: '2-digit', 
+            minute: '2-digit',
+            hour12: false
+        })
+    }
+}
 
 export const formatRelativeTime = (timestamp: number): string => {
     const notificationTime = new Date(timestamp)

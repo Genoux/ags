@@ -281,6 +281,37 @@ class NotificationStore {
             this.updateReactiveState()
         }
     }
+
+    // =========================================================================
+    // Configuration Methods
+    // =========================================================================
+
+    public setSystemNotificationFiltering(enabled: boolean): void {
+        this.config.filterSystemNotifications = enabled
+        this.filters = new NotificationFilters(this.config)
+        console.log(`System notification filtering ${enabled ? 'enabled' : 'disabled'}`)
+    }
+
+    public addIgnoredApp(appName: string): void {
+        if (!this.config.ignoredApps.includes(appName)) {
+            this.config.ignoredApps.push(appName)
+            this.filters = new NotificationFilters(this.config)
+            console.log(`Added ${appName} to ignored apps`)
+        }
+    }
+
+    public removeIgnoredApp(appName: string): void {
+        const index = this.config.ignoredApps.indexOf(appName)
+        if (index > -1) {
+            this.config.ignoredApps.splice(index, 1)
+            this.filters = new NotificationFilters(this.config)
+            console.log(`Removed ${appName} from ignored apps`)
+        }
+    }
+
+    public getConfig(): Required<NotificationStoreConfig> {
+        return { ...this.config }
+    }
 }
 
 // Export singleton instance

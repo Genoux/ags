@@ -1,0 +1,132 @@
+@use "../../_variables" as *;
+
+// =============================================================================
+// System Control Widget Styling
+// =============================================================================
+
+.system-control-container {
+    padding: $spacing-md;
+    background-color: $bg-tertiary;
+    border-radius: $radius-md;
+    
+    .system-control-btn {
+        all: unset;
+        padding: $spacing-md;
+        border-radius: $radius-sm;
+        color: $text-secondary;
+        background-color: transparent;
+        transition: all $transition-fast;
+        min-width: 48px;
+        min-height: 48px;
+        
+        icon {
+            font-size: $font-size-xl;
+        }
+        
+        &:hover {
+            background-color: $bg-hover;
+            color: $text-primary;
+        }
+        
+        
+        // Individual button colors
+        &.lock-btn:hover {
+            background-color: rgba($accent-primary, 0.3);
+            color: $accent-hover;
+        }
+        
+        &.sleep-btn:hover {
+            background-color: rgba($warning-primary, 0.2);
+            color: $warning-primary;
+        }
+        
+        &.shutdown-btn:hover {
+            background-color: rgba($error-primary, 0.2);
+            color: $error-primary;
+        }
+        
+        // Confirmation state styling
+        &.shutdown-btn.confirm-pending {
+            background-color: rgba($error-primary, 0.3);
+            color: $error-primary;
+        }
+    }
+}
+
+// =============================================================================
+// Inline Confirmation Overlay Styling
+// =============================================================================
+
+.inline-confirmation-overlay {
+    padding: $spacing-lg;
+    background-color: rgba($bg-secondary, 0.95);
+    border: 1px solid $border-secondary;
+    border-radius: $radius-md;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    
+    .confirmation-header {
+        margin-bottom: $spacing-md;
+        
+        .confirmation-title {
+            font-size: $font-size-lg;
+            font-weight: 600;
+            color: $text-primary;
+        }
+        
+        .confirmation-message {
+            font-size: $font-size-sm;
+            color: $text-secondary;
+            opacity: 0.8;
+        }
+    }
+    
+    .confirmation-buttons {
+        .confirmation-btn {
+            all: unset;
+            padding: $spacing-sm $spacing-lg;
+            border-radius: $radius-sm;
+            font-size: $font-size-sm;
+            font-weight: 500;
+            min-width: 60px;
+            transition: all $transition-fast;
+            
+            &.cancel-btn {
+                background-color: $bg-hover;
+                color: $text-secondary;
+                border: 1px solid $border-primary;
+                
+                &:hover {
+                    background-color: $bg-active;
+                    color: $text-primary;
+                    border-color: $border-secondary;
+                }
+            }
+            
+            &.confirm-btn {
+                background-color: $error-primary;
+                color: $text-primary;
+                border: 1px solid $error-primary;
+                
+                &:hover {
+                    background-color: $error-hover;
+                    border-color: $error-hover;
+                    box-shadow: 0 2px 8px rgba($error-primary, 0.3);
+                }
+                
+                &:active {
+                    box-shadow: 0 1px 4px rgba($error-primary, 0.2);
+                }
+            }
+        }
+    }
+}
+
+// Stack transition adjustments
+.system-control-container stack {
+    transition: all 200ms ease;
+    
+    // Ensure consistent height during transitions
+    .system-controls, .confirmation-container {
+        min-height: 48px; // Match button height
+    }
+}

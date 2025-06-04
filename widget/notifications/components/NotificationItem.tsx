@@ -2,7 +2,7 @@ import { Gtk } from "astal/gtk3"
 import { GLib, Gio } from "astal"
 import Hyprland from "gi://AstalHyprland"
 import { NotificationProps } from "../types"
-import { getValidIcon, formatRelativeTime } from "../utils"
+import { getValidIcon, formatTime } from "../utils"
 import { notificationStore } from "../store"
 
 // =============================================================================
@@ -80,6 +80,7 @@ function focusSourceApp(notificationData: any): void {
             }
         }
         
+        //TODO: Simpler way to launch app
         // If no existing window found, try to launch the application
         if (notificationData.desktopEntry) {
             let desktopEntry = notificationData.desktopEntry
@@ -165,14 +166,13 @@ function NotificationHeader({ notification, timestamp, onDismiss, onMarkRead }: 
             
             <label 
                 className="timestamp"
-                label={formatRelativeTime(timestamp)}
+                label={formatTime(timestamp)}
             />
             
             <box className="action-buttons">
                 {onDismiss && (
                     <button 
                         className="dismiss-btn"
-                        tooltip_text="Dismiss"
                         onClicked={onDismiss}>
                         <icon icon="window-close-symbolic" />
                     </button>
@@ -227,75 +227,73 @@ function NotificationContent({
 
 function NotificationActions({ 
     notification, 
-    showActions = true,
     onActionClick 
-}: Pick<NotificationProps, 'notification' | 'showActions' | 'onActionClick'>) {
-    if (!showActions) {
-        return null
-    }
-
+}: Pick<NotificationProps, 'notification' | 'onActionClick'>) {
     const actions = notification.get_actions()
-    console.log("Actions from get_actions():", actions)
-    console.log("Actions length:", actions.length)
-    console.log("First action:", actions[0])
-    
-    if (actions.length === 0) {
-        return null
-    }
 
     return (
         <box className="notification-actions">
             {actions.map((action, index) => {
-                console.log(`Action ${index}:`, action)
-                console.log(`Action ${index} properties:`, Object.keys(action))
-                console.log(`Action ${index} label:`, action.label)
-                console.log(`Action ${index} id:`, action.id)
-                
-                // Handle case where action might not have destructurable properties
-                const actionLabel = action.label || `Action ${index + 1}`
-                const actionId = action.id || index.toString()
-                
-                return (
-                    <button 
-                        className="action-button"
-                        onClicked={() => {
-                            try {
-                                // Store notification data before invoking action to prevent accessing freed objects
-                                const notificationData = {
-                                    id: notification.id,
-                                    desktopEntry: notification.desktopEntry,
-                                    appName: notification.appName,
-                                    appIcon: notification.appIcon
-                                }
-                                
-                                console.log("Invoking action with ID:", actionId)
-                                
-                                // Invoke the action on the notification
-                                // The NotificationStore will automatically handle the "resolved" signal
-                                // if this action dismisses the notification
-                                notification.invoke(actionId)
-                                
-                                // Add a small delay before focusing to prevent race conditions
-                                // Use stored data instead of accessing notification object directly
-                                setTimeout(() => {
-                                    try {
-                                        focusSourceApp(notificationData)
-                                    } catch (error) {
-                                        console.error("Error focusing app after delay:", error)
+                try {
+                    // Try to destructure, but handle malformed objects
+                    const { label, id } = action || {}
+                    console.log(`Action ${index}:`, { label, id })
+                    
+                    // Skip invalid actions
+                    if (!label && !id) {
+                        console.warn(`Skipping invalid action at index ${index}:`, action)
+                        return null
+                    }
+                    
+                    // Use destructured values with fallbacks
+                    const actionLabel = label || `Action ${index + 1}`
+                    const actionId = id || index.toString()
+                    
+                    return (
+                        <button 
+                            className="action-button"
+                            onClicked={() => {
+                                try {
+                                    // Store notification data before invoking action to prevent accessing freed objects
+                                    const notificationData = {
+                                        id: notification.id,
+                                        desktopEntry: notification.desktopEntry,
+                                        appName: notification.appName,
+                                        appIcon: notification.appIcon
                                     }
-                                }, 50)
-                                
-                                if (onActionClick) {
-                                    onActionClick()
+                                    
+                                    console.log("Invoking action with ID:", actionId)
+                                    
+                                    // Invoke the action on the notification
+                                    // The NotificationStore will automatically handle the "resolved" signal
+                                    // if this action dismisses the notification
+                                    notification.invoke(actionId)
+                                    
+                                    // Add a small delay before focusing to prevent race conditions
+                                    // Use stored data instead of accessing notification object directly
+                                    setTimeout(() => {
+                                        try {
+                                            focusSourceApp(notificationData)
+                                        } catch (error) {
+                                            console.error("Error focusing app after delay:", error)
+                                        }
+                                    }, 50)
+                                    
+                                    if (onActionClick) {
+                                        onActionClick()
+                                    }
+                                } catch (error) {
+                                    console.error("Failed to invoke notification action:", error)
                                 }
-                            } catch (error) {
-                                console.error("Failed to invoke notification action:", error)
-                            }
-                        }}>
-                        <label label={actionLabel} />
-                    </button>
-                )
-            })}
+                            }}>
+                            <label label={actionLabel} />
+                        </button>
+                    )
+                } catch (error) {
+                    console.error(`Error processing action ${index}:`, error, action)
+                    return null
+                }
+            }).filter(Boolean)} {/* Filter out null values */}
         </box>
     )
 }
@@ -316,11 +314,15 @@ export default function NotificationItem({
     showActions = true
 }: NotificationProps) {
     const readClass = isRead ? "read" : "unread"
+    
+    // Check if notification has actions
+    const actions = notification.get_actions()
+    const hasActions = showActions && actions && actions.length > 0
 
     return (
         <eventbox 
             className={`notification ${readClass}`}>
-            <box className="notification-container" vertical>
+            <box className="notification-container" vertical spacing={8}>
                 <NotificationHeader 
                     notification={notification}
                     timestamp={timestamp}
@@ -336,11 +338,12 @@ export default function NotificationItem({
                     displayBody={displayBody}
                 />
                 
-                <NotificationActions 
-                    notification={notification}
-                    showActions={showActions}
-                    onActionClick={onActionClick}
-                />
+                {hasActions && (
+                    <NotificationActions 
+                        notification={notification}
+                        onActionClick={onActionClick}
+                    />
+                )}
             </box>
         </eventbox>
     )

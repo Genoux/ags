@@ -9,10 +9,10 @@ box.MediaPlayer {
     border: none;
     border-radius: $radius-lg;
     padding: $spacing-lg;
-    background-size: cover;
+    background-size:contain;
     background-position: center;
     background-repeat: no-repeat;
-    background-color: $bg-secondary; // Fallback when no cover art
+    background-color: $bg-primary;
 
     
 
@@ -118,9 +118,6 @@ box.MediaPlayer {
             
             &:hover {
                 background-color: rgba(255, 255, 255, 0.1);
-            }
-            
-            &:active {
             }
         }
     }

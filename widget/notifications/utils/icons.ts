@@ -100,8 +100,23 @@ export const getValidIcon = (
         if (categoryIcon) return categoryIcon
     }
     
-    // Generic fallbacks
-    const fallbacks = [
+    // Better notification-specific fallbacks that are more colorful/recognizable
+    const notificationFallbacks = [
+        "notification-symbolic", // Notification bell icon
+        "dialog-information-symbolic", // Info icon
+        "mail-unread-symbolic", // Mail icon for messages
+        "emblem-important-symbolic", // Important marker
+        "preferences-desktop-notification-symbolic", // System notification icon
+        "applications-utilities-symbolic" // Utilities icon
+    ]
+    
+    // Try notification-specific fallbacks first
+    for (const fallback of notificationFallbacks) {
+        if (isIcon(fallback)) return fallback
+    }
+    
+    // Generic application fallbacks as last resort
+    const genericFallbacks = [
         "application-x-executable",
         "application-default-icon", 
         "application-x-generic",
@@ -109,7 +124,7 @@ export const getValidIcon = (
         "image-missing"
     ]
     
-    for (const fallback of fallbacks) {
+    for (const fallback of genericFallbacks) {
         if (isIcon(fallback)) return fallback
     }
     

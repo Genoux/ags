@@ -10,7 +10,6 @@ interface WindowConfig {
     onWindowClick?: () => void // Optional: custom click handler
     referenceWidget?: Gtk.Widget // Widget to position relative to
     margin?: { top?: number, bottom?: number, left?: number, right?: number }
-    closeOnClickOutside?: boolean // Optional: close when clicking outside (default: true)
 }
 
 export function createWindowManager(config: WindowConfig) {
@@ -67,38 +66,36 @@ export function createWindowManager(config: WindowConfig) {
             })
         }
 
-        // ONLY close behavior: click outside to close
-        if (config.closeOnClickOutside !== false) { // Default to true
-            console.log("Setting up click-outside-to-close for", config.name)
-            
-            // Use a transparent overlay window to catch outside clicks
-            const overlay = new Widget.Window({
-                name: `${config.name}-click-overlay`,
-                layer: Astal.Layer.OVERLAY,
-                exclusivity: Astal.Exclusivity.IGNORE,
-                anchor: Astal.WindowAnchor.TOP | Astal.WindowAnchor.BOTTOM | 
-                        Astal.WindowAnchor.LEFT | Astal.WindowAnchor.RIGHT,
-                visible: false,
-                child: new Widget.EventBox({
-                    onButtonPressEvent: () => {
-                        console.log("Click outside detected via overlay, closing", config.name)
-                        enhancedHide()
-                        overlay.visible = false
-                        return true
-                    }
-                })
+        // Always enable click-outside-to-close behavior
+        console.log("Setting up click-outside-to-close for", config.name)
+        
+        // Use a transparent overlay window to catch outside clicks
+        overlay = new Widget.Window({
+            name: `${config.name}-click-overlay`,
+            layer: Astal.Layer.OVERLAY,
+            exclusivity: Astal.Exclusivity.IGNORE,
+            anchor: Astal.WindowAnchor.TOP | Astal.WindowAnchor.BOTTOM | 
+                    Astal.WindowAnchor.LEFT | Astal.WindowAnchor.RIGHT,
+            visible: false,
+            child: new Widget.EventBox({
+                onButtonPressEvent: () => {
+                    console.log("Click outside detected via overlay, closing", config.name)
+                    enhancedHide()
+                    overlay!.visible = false
+                    return true
+                }
             })
+        })
 
-            // Show/hide overlay with main window
-            enhancedShow = () => {
-                show()
-                overlay.visible = true
-            }
-            
-            enhancedHide = () => {
-                hide()
-                overlay.visible = false
-            }
+        // Show/hide overlay with main window
+        enhancedShow = () => {
+            show()
+            overlay!.visible = true
+        }
+        
+        enhancedHide = () => {
+            hide()
+            overlay!.visible = false
         }
 
         return window

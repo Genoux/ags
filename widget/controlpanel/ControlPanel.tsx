@@ -3,6 +3,8 @@ import { mediaPlayer, hasMediaPlayers } from "../mediaplayer";
 import { audioControls } from "../audiocontrols";
 import { bind } from "astal";
 import { createWindowManager } from "../WindowHelper";
+import { NotificationCenterWidget } from "../notifications"
+import SystemControl from "../systemcontrol/SystemControl"
 
 const controlPanel = createWindowManager({
   name: "control-panel",
@@ -16,6 +18,12 @@ const controlPanel = createWindowManager({
 function ControlPanel() {
   return (
     <box className="ControlPanel" vertical spacing={6}>
+      <box className="notification-section">
+        <NotificationCenterWidget />
+      </box>
+      <box className="system-control-section">
+        <SystemControl />
+      </box>
       <box className="audio-section">{audioControls.content}</box>
       <box className="media-section" visible={bind(hasMediaPlayers).as((visible) => visible)}>
         {mediaPlayer.content}

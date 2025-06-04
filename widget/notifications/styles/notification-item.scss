@@ -20,12 +20,13 @@ eventbox.notification {
 
 
   > box {
-    font-family: $font-family-primary;
     min-width: 300px;
-    border-radius: $radius-lg;
-    background-color: $bg-primary;
+    font-family: $font-family-primary;
+    border-radius: $radius-sm;
+    background-color: $bg-quaternary;
     border: $border-width solid $border-primary;
     transition: all $transition-normal;
+    padding: $spacing-lg 0 ;
   }
 
   // Subtle read state
@@ -36,9 +37,11 @@ eventbox.notification {
 
   // Clean header
   .notification-header {
-    padding: $spacing-md $spacing-lg;
+    padding: 0 $spacing-lg;
 
     .app-icon {
+      min-width: 16px;
+      min-height: 16px;
       color: $theme-white;
     }
 
@@ -74,13 +77,12 @@ eventbox.notification {
   .separator {
     min-height: $separator-width;
     background-color: $separator-primary;
-    margin: 0 $spacing-lg;
     opacity: 0.3;
   }
 
   // Content styling
   .notification-content {
-    padding: 0 $spacing-lg $spacing-md;
+    padding: 0 $spacing-lg;
 
     .notification-image {
       border-radius: $radius-sm;

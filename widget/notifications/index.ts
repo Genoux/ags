@@ -1,6 +1,6 @@
 // Main components
 export { default as NotificationButton } from "./NotificationButton"
-export { default as NotificationCenter } from "./NotificationCenter"
+export { default as NotificationCenter, NotificationCenterWidget } from "./NotificationCenter"
 export { default as NotificationItem } from "./components/NotificationItem"
 export { default as NotificationPopup } from "./components/NotificationPopup"
 

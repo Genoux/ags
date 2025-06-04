@@ -20,7 +20,6 @@ const notifd = Notifd.get_default()
 
 // Function to add a notification popup
 function addPopup(notification: Notifd.Notification) {
-    // Don't show popup if already showing
     if (activePopups.get().some(p => p.id === notification.id)) return
     
     const popup: PopupNotification = {
@@ -72,6 +71,19 @@ function removePopup(id: number) {
     activePopups.set(popups.filter(p => p.id !== id))
 }
 
+// Function to dismiss all popup notifications
+export function dismissAllPopups() {
+    const popups = activePopups.get()
+    // Clear all timeouts
+    popups.forEach(popup => {
+        if (popup.timeoutId) {
+            clearTimeout(popup.timeoutId)
+        }
+    })
+    // Clear all popups
+    activePopups.set([])
+}
+
 // Listen directly to Notifd for new notifications
 notifd.connect("notified", (_, id) => {
     const notification = notifd.get_notification(id)
@@ -90,18 +102,19 @@ export default function NotificationPopups() {
         <window
             className="NotificationPopups"
             name="notification-popups"
-            anchor={Astal.WindowAnchor.TOP | Astal.WindowAnchor.RIGHT}
+            anchor={Astal.WindowAnchor.BOTTOM | Astal.WindowAnchor.RIGHT}
             layer={Astal.Layer.OVERLAY}
             exclusivity={Astal.Exclusivity.IGNORE}
             keymode={Astal.Keymode.NONE}
             margin_top={10}
-            margin_right={10}
+            margin_right={6}
+            margin_bottom={42}
             visible={bind(activePopups).as(popups => popups.length > 0)}>
             
             <box 
                 className="popup-stack" 
                 vertical 
-                spacing={8}>
+                spacing={2}>
                 {bind(activePopups).as((popups: PopupNotification[]) => 
                     popups.map((popup, index) => {
                         let opacity = 1

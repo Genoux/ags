@@ -6,14 +6,15 @@ window.NotificationCenter {
 
 .notification-center-container {
   background-color: $bg-primary;
-  border-radius: $radius-md;
-  border: $border-width solid $border-primary;
   min-height: 300px;
-  margin: $spacing-xl;
-
+  min-width: 300px;
+  border-left: $border-width solid $border-primary;
+  border-bottom-left-radius: $radius-lg;
+ 
   // Header
   .header {
     padding: $spacing-xl + $spacing-xs $spacing-xl + $spacing-sm $spacing-xl;
+    border-bottom: $border-width solid $border-primary;
 
     .title {
       font-size: $font-size-xl + 3px;
@@ -38,26 +39,47 @@ window.NotificationCenter {
 
   // Enhanced notification list
   .notification-list {
+    // Remove any default scrollable borders/backgrounds
+    background: transparent;
+    border: none;
+    padding: $spacing-md;
+    
     // Empty state styling
     .empty-state {
-      padding: $spacing-2xl + $spacing-lg $spacing-2xl;
-      color: $text-secondary;
+      color: $theme-white;
 
       icon {
-        font-size: 3em;
+        font-size: 1.5em;
         opacity: 0.5;
       }
 
       label {
-        font-size: $font-size-lg + 2px;
-        opacity: 0.8;
+        font-size: $font-size-lg;
+        opacity: 0.3;
       }
     }
+  }
+
+  // Target scrollable widget specifically
+  scrolled,
+  scrolledwindow {
+    all: unset;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+  }
+
+  // Target any viewport inside
+  viewport {
+    all: unset;
+    background: transparent;
+    border: none;
   }
 }
 
 /* Scrollbar styling */
 scrollbar {
+  all: unset;
   background-color: transparent;
   margin: 1px;
 }

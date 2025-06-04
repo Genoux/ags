@@ -41,7 +41,7 @@ $theme-white: rgba(255, 255, 255, 1);      // White reference
 $bg-primary: theme-alpha($theme-base, 0.55);           // Main background (lightest layer)
 $bg-secondary: theme-alpha(theme-darken(3%), 0.55);    // Secondary surfaces (slightly darker)
 $bg-tertiary: theme-alpha(theme-darken(6%), 0.50);     // Tertiary surfaces (darker still)
-$bg-quaternary: theme-alpha(theme-darken(10%), 0.65);  // Modal/overlay backgrounds (darkest for depth)
+$bg-quaternary: theme-alpha(theme-darken(10%), 0.45);  // Modal/overlay backgrounds (darkest for depth)
 
 // Interactive states - very gentle transparent overlays
 $bg-hover: theme-alpha($theme-white, 0.03);            // Very subtle hover state
@@ -64,6 +64,16 @@ $separator-primary: theme-alpha($theme-white, 0.08);   // Separators
 $accent-primary: theme-alpha($theme-accent, 0.65);     // Main accent
 $accent-hover: theme-alpha($theme-accent, 0.75);       // Accent hover
 $accent-muted: theme-alpha($theme-accent, 0.45);       // Muted accent
+
+// Warning colors - yellow/amber for caution states
+$warning-primary: rgb(255, 193, 7);                    // Main warning color
+$warning-hover: rgb(255, 206, 84);                     // Warning hover state
+$warning-muted: theme-alpha($warning-primary, 0.7);    // Muted warning
+
+// Error/danger colors - red for destructive actions
+$error-primary: rgb(220, 53, 69);                      // Main error color
+$error-hover: rgb(225, 83, 97);                        // Error hover state  
+$error-muted: theme-alpha($error-primary, 0.7);        // Muted error
 
 // Shadow colors - black with different opacities
 $shadow-primary: rgba(0, 0, 0, 0.4);                   // Strong shadows
@@ -94,13 +104,12 @@ $border-width: 1px;
 $separator-width: 1px;
 
 // Transitions
-$transition-fast: 150ms ease-out;
+$transition-fast: 50ms ease-in-out;
 $transition-normal: 200ms ease-in-out;
 $transition-slow: 300ms ease-in-out;
 
 // Typography
-$font-family-primary: "SF Pro Display", "Helvetica Neue", "Segoe UI", sans-serif;
-$font-family-mono: "SF Mono", "Monaco", "Consolas", monospace;
+$font-family-primary: "SF Pro Text";
 $font-size-xs: 10px;
 $font-size-sm: 12px;
 $font-size-md: 13px;
