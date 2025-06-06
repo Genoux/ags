@@ -6,34 +6,16 @@
 // =============================================================================
 
 .NotificationButton {
-  @include interactive-button($spacing-sm);
+  @include button-base;
   min-width: $spacing-xl;
-  
-  &.has-notifications {
-    .notification-icon {
-      color: $accent-primary;
-    }
-  }
-  
+
   .notification-icon {
     color: $text-primary;
     transition: color $transition-normal;
   }
-  
-  .badge-container {
-    margin-left: $spacing-xs;
-    min-width: 0;
-    min-height: 0;
-  }
-  
-  .badge {
-    background-color: $theme-white;
-    color: $theme-base;
-    font-size: $font-size-xs;
-    font-weight: 600;
-    min-width: 16px;
-    min-height: 12px;
-    border-radius: 8px;
+
+  &.has-notifications .notification-icon {
+    color: $accent-primary;
   }
 }
 
@@ -51,22 +33,23 @@ window.NotificationCenter {
   min-width: 300px;
   border-left: $border-width solid $border-primary;
   border-bottom-left-radius: $radius-lg;
- 
+
   .header {
-    padding: $spacing-xl + $spacing-xs $spacing-xl + $spacing-sm $spacing-xl;
+    padding: $spacing-xl $spacing-lg;
     border-bottom: $border-width solid $border-primary;
 
     .title {
-      font-size: $font-size-xl + 3px;
+      font-size: $font-size-lg;
       color: $text-primary;
     }
 
     .clear-all-btn,
     .close-btn {
-      @include interactive-button($spacing-xs);
+      @include button-base;
       font-size: $font-size-sm;
       color: $text-secondary;
-      
+      transition: color $transition-fast;
+
       &:hover {
         color: $theme-white;
       }
@@ -77,7 +60,7 @@ window.NotificationCenter {
     background: transparent;
     border: none;
     padding: $spacing-md;
-    
+
     .empty-state {
       color: $theme-white;
 
@@ -112,10 +95,11 @@ window.NotificationCenter {
 // Notification Item Styles
 // =============================================================================
 
-window.NotificationPopup {
-  @include window-base;
+.badge {
+  @include badge;
 }
 
+window.NotificationPopup,
 window.NotificationPopups {
   @include window-base;
 }
@@ -124,19 +108,39 @@ eventbox.notification {
   all: unset;
 
   > box {
-    @include notification-item;
+    margin-bottom: $spacing-sm;
+    border: 1px solid $border-tertiary;
+    background-color: $bg-tertiary;
+    border-radius: $radius-md;
+    transition: all $transition-fast;
     min-width: 300px;
     font-family: $font-family-primary;
-    padding: $spacing-lg 0;
+  }
+
+  &:hover > box {
+    background-color: $bg-quaternary;
+  }
+
+  &.clickable:hover > box {
+    background-color: $bg-quaternary;
   }
 
   &.read > box {
-    opacity: 0.7;
-    background-color: $bg-secondary;
+   // background-color: rgba($bg-secondary, 0.7);
+    
+    .app-name,
+    .summary {
+      opacity: 0.8;
+    }
+    
+    .body,
+    .timestamp {
+      opacity: 0.6;
+    }
   }
 
   .notification-header {
-    padding: 0 $spacing-lg;
+    padding: $spacing-lg;
 
     .app-icon {
       min-width: 16px;
@@ -155,23 +159,26 @@ eventbox.notification {
       color: $text-secondary;
     }
 
-    .close-button {
-      @include interactive-button($spacing-xs);
-      color: $text-secondary;
-      font-size: $font-size-sm;
-      min-width: 20px;
-      min-height: 20px;
+    .close-btn {
+      @include button-base;
     }
   }
 
   .notification-content {
-    padding: $spacing-sm $spacing-lg;
+    padding: $spacing-lg;
+
+    .notification-image {
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      min-width: 50px;
+      border-radius: $radius-xs;
+    }
 
     .summary {
       font-weight: 600;
       color: $text-primary;
       font-size: $font-size-md;
-      margin-bottom: $spacing-xs;
     }
 
     .body {
@@ -180,20 +187,9 @@ eventbox.notification {
     }
   }
 
-  .notification-actions {
-    padding: $spacing-sm $spacing-lg 0;
-
-    button {
-      @include interactive-button($spacing-xs $spacing-sm);
-      color: $accent-primary;
-      font-size: $font-size-sm;
-      font-weight: 500;
-      margin-right: $spacing-sm;
-      
-      &:hover {
-        background-color: rgba($accent-primary, 0.1);
-      }
-    }
+  .separator {
+    background-color: $border-primary;
+    opacity: 0.3;
   }
 }
 
@@ -205,12 +201,13 @@ scrollbar {
   all: unset;
   background-color: transparent;
   margin: 1px;
-  
+
   slider {
     background-color: $text-tertiary;
     border-radius: $spacing-xs + 1px;
     min-width: $spacing-xs;
-    
+    transition: background-color $transition-fast;
+
     &:hover {
       background-color: $text-secondary;
     }

@@ -11,7 +11,14 @@
     border-radius: $radius-md;
     
     .system-control-btn {
-        @include system-control-button;
+        @include button-base;
+        color: $text-secondary;
+        background-color: transparent;
+        min-height: 50px;
+        
+        &:hover {
+            color: $text-primary;
+        }
         
         icon {
             font-size: $font-size-xl;
@@ -46,33 +53,45 @@
 // =============================================================================
 
 .inline-confirmation-overlay {
+    
     .confirmation-header {
-        margin-bottom: $spacing-md;
         
         .confirmation-title {
-            font-size: $font-size-lg;
+            font-size: $font-size-md;
             font-weight: 600;
             color: $text-primary;
         }
         
-        .confirmation-message {
-            font-size: $font-size-sm;
-            color: $text-secondary;
-            opacity: 0.8;
-        }
     }
     
     .confirmation-buttons {
-        .confirmation-btn {
-            &.cancel-btn {
-                @include cancel-button;
+   
+            @include button-base;
+            font-size: $font-size-sm;
+            font-weight: 500;
+            
+            .cancel-btn {
+                @include button-base;
+                border: 1px solid $border-primary;
+                min-width: 60px;
+                &:hover {
+                    background-color: $bg-active;
+                    color: $text-primary;
+                    border-color: $border-secondary;
+                }
             }
             
-            &.confirm-btn {
-                @include confirm-button;
+            .confirm-btn {
+                background-color: $error-primary;
+                color: $text-primary;
+                min-width: 60px;
+                
+                &:hover {
+                    background-color: $error-hover;
+                }
             }
         }
-    }
+
 }
 
 // Stack transition adjustments

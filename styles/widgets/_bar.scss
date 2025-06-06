@@ -25,27 +25,35 @@ window.Bar {
 
 // Common bar item styling
 .bar-item {
-  @include bar-item-base;
+  border-radius: $radius-sm;
+  border: $border-width solid $border-primary;
+  background: $bg-primary;
+  box-shadow: 0 0 $spacing-2xl $shadow-tertiary;
 }
 
 // Left Section - Control panel and workspaces
 .bar-left {
   .control-panel {
     margin-right: $spacing-sm;
-
+    
     button {
-      padding: 0 $spacing-lg;
-
+      @include button-base;
+      
       &:hover {
         background: $bg-hover;
       }
-
-      &:active {
-        background: $bg-active;
+      
+      &:active,
+      &.active {
+        background: $bg-hover;
+        
+        &:hover {
+          background: $bg-hover;
+        }
       }
     }
   }
-
+  
   .workspaces {
     padding: $spacing-xs;
   }
@@ -59,16 +67,21 @@ window.Bar {
 // Right Section - Consistent spacing and subtle backgrounds
 .bar-right {
   padding: $spacing-sm;
-
+  
   // Add horizontal spacing between items
   > *:not(:last-child) {
-    @include subtle-container;
+    @include button-base;
+    padding: $spacing-sm $spacing-md;
+    
+    &:hover {
+      background: $bg-hover;
+    }
   }
-
+  
   .time-display {
     padding: 0 $spacing-sm;
   }
-
+  
   button {
     min-width: $spacing-xl;
   }
@@ -82,21 +95,26 @@ window.Bar {
   button {
     all: unset;
   }
-
+  
   label {
     color: inherit;
     font-weight: inherit;
-
+    
     &.secondary {
-      @include label-secondary;
+      color: $text-secondary;
+      font-size: $font-size-xs;
     }
-
+    
     &.tertiary {
-      @include label-tertiary;
+      color: $text-tertiary;
+      font-size: 9px; // Slightly smaller than xs
     }
   }
-
+  
   separator {
-    @include separator;
+    background: $separator-primary;
+    min-width: $separator-width;
+    min-height: $spacing-lg;
+    margin: 0 $spacing-sm;
   }
 }

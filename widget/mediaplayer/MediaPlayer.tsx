@@ -147,16 +147,17 @@ export function ProgressWithTime({
           currentTime.set(value * player.length);
         }}
         onButtonReleaseEvent={() => {
-          // Seek to position
+          // Get the target seek time and seek immediately
           const seekTime = position.get() * player.length;
           player.position = seekTime;
           trackPlayerInteraction(player);
 
-          // Wait longer for seek to complete, then reconnect
+          // Keep the UI locked at user position until seek completes
+          // Don't reconnect to player notifications immediately
           setTimeout(() => {
             isUserInteracting = false;
             connectToPlayer();
-          }, 300); // Longer delay to ensure seek settles
+          }, 800); // Give enough time for seek to complete
 
           return false;
         }}

@@ -1,27 +1,34 @@
 @use "variables" as *;
 
 // =============================================================================
-// LAYOUT MIXINS
+// TRULY REUSABLE MIXINS - Used across multiple components
 // =============================================================================
 
-// Common item styling mixin
-@mixin bar-item-base {
+// Base button reset and interactive behavior - THE standard button pattern
+@mixin button-base {
+  all: unset;
+  padding: $spacing-sm $spacing-md;
   border-radius: $radius-sm;
-  border: $border-width solid $border-primary;
-  background: $bg-primary;
-  box-shadow: 0 0 $spacing-2xl $shadow-tertiary;
+  transition: all $transition-normal;
+  color: $text-primary;
+  font-size: $font-size-sm;
+  
+  &:hover {
+    background-color: $bg-hover;
+  }
+  
+  &:active {
+    background-color: $bg-active;
+  }
 }
 
-// Panel/container styling mixin
-@mixin panel-base {
-  font-family: $font-family-primary;
-  background-color: $bg-secondary;
-  border-radius: $radius-lg;
-  border: $border-width solid $border-tertiary;
-  padding: $spacing-md;
+// Window base styling - Used by multiple popup windows
+@mixin window-base {
+  all: unset;
+  background: transparent;
 }
 
-// Section container mixin
+// Section container mixin - Used multiple times in control panel
 @mixin section-container {
   background-color: $bg-tertiary;
   border-radius: $radius-md;
@@ -29,217 +36,24 @@
   margin: 0;
 }
 
-// =============================================================================
-// INTERACTIVE ELEMENT MIXINS
-// =============================================================================
-
-// Interactive button mixin
-@mixin interactive-button($padding: $spacing-xs) {
-  all: unset;
-  padding: $padding;
-  border-radius: $radius-sm;
-  transition: background-color $transition-normal;
-  
-  &:hover {
-    background: $bg-hover;
-  }
-  
-  &:active,
-  &.active {
-    background: $bg-active;
-    
-    &:hover {
-      background: $bg-active;
-    }
-  }
-}
-
-// Control button variant (for left section)
-@mixin control-button {
-  @include interactive-button($spacing-sm $spacing-md);
-  
-  &:hover {
-    background: $bg-hover;
-  }
-  
-  &:active,
-  &.active {
-    background: $bg-hover;
-    
-    &:hover {
-      background: $bg-hover;
-    }
-  }
-}
-
-// Standard button with border
-@mixin standard-button($padding: $spacing-sm) {
-  all: unset;
-  min-width: $spacing-xs;
-  min-height: $spacing-xs;
-  padding: $padding;
-  border-radius: $radius-sm;
-  border: $border-width solid $border-primary;
-  background-color: $bg-primary;
-  transition: background-color $transition-fast;
-  
-  &:hover {
-    background-color: $bg-hover;
-  }
-  
-  &:active {
-    background-color: $bg-active;
-  }
-}
-
-// System control button variants
-@mixin system-control-button {
-  all: unset;
-  padding: $spacing-md;
-  border-radius: $radius-sm;
-  color: $text-secondary;
-  background-color: transparent;
-  transition: all $transition-fast;
-  min-width: 48px;
-  min-height: 48px;
-  
-  &:hover {
-    background-color: $bg-hover;
-    color: $text-primary;
-  }
-}
-
-// Confirmation button variants
-@mixin confirmation-button-base {
-  all: unset;
-  padding: $spacing-sm $spacing-lg;
-  border-radius: $radius-sm;
-  font-size: $font-size-sm;
-  font-weight: 500;
-  min-width: 60px;
-  transition: all $transition-fast;
-}
-
-@mixin cancel-button {
-  @include confirmation-button-base;
-  background-color: $bg-hover;
-  color: $text-secondary;
-  border: 1px solid $border-primary;
-  
-  &:hover {
-    background-color: $bg-active;
-    color: $text-primary;
-    border-color: $border-secondary;
-  }
-}
-
-@mixin confirm-button {
-  @include confirmation-button-base;
-  background-color: $error-primary;
-  color: $text-primary;
-  border: 1px solid $error-primary;
-  
-  &:hover {
-    background-color: $error-hover;
-    border-color: $error-hover;
-    box-shadow: 0 2px 8px rgba($error-primary, 0.3);
-  }
-  
-  &:active {
-    box-shadow: 0 1px 4px rgba($error-primary, 0.2);
-  }
-}
-
-// =============================================================================
-// CONTAINER MIXINS
-// =============================================================================
-
-// Subtle container mixin for consistent backgrounds
-@mixin subtle-container {
-  padding: $spacing-sm $spacing-md;
-  border-radius: $radius-sm;
-  transition: background-color $transition-normal;
-  
-  &:hover {
-    background: $bg-hover;
-  }
-}
-
-// Window base styling
-@mixin window-base {
-  all: unset;
-  background: transparent;
-}
-
-// =============================================================================
-// TYPOGRAPHY MIXINS
-// =============================================================================
-
-// Label variants
-@mixin label-secondary {
-  color: $text-secondary;
+// Badge mixin - for notification badges and similar elements
+@mixin badge {
+  background-color: $theme-white;
   font-size: $font-size-xs;
-}
-
-@mixin label-tertiary {
-  color: $text-tertiary;
-  font-size: 9px; // Slightly smaller than xs
-}
-
-@mixin volume-label {
-  font-size: $font-size-sm;
-  opacity: 0.7;
-  min-width: 35px;
-}
-
-// =============================================================================
-// COMPONENT-SPECIFIC MIXINS
-// =============================================================================
-
-// Separator styling
-@mixin separator {
-  background: $separator-primary;
-  min-width: $separator-width;
-  min-height: $spacing-lg;
-  margin: 0 $spacing-sm;
-}
-
-// Scale/slider styling
-@mixin scale-base {
-  padding: 0;
+  font-weight: 600;
+  padding: 0 $spacing-sm;
+  border-radius: 8px;
+  color: $theme-base;
   
-  trough {
-    min-height: $spacing-md;
+  label {
+    margin: 0;
+    padding: 0;
+    font-size: $font-size-xs;
   }
-  
-  highlight {
-    background-color: $text-primary;
-  }
-  
-  slider {
-    all: unset;
-  }
-}
-
-// Notification item styling
-@mixin notification-item {
-  padding: $spacing-md;
-  margin-bottom: $spacing-sm;
-  background-color: $bg-secondary;
-  border-radius: $radius-md;
-  border: $border-width solid $border-primary;
-  transition: all $transition-fast;
-  
-  &:hover {
-    background-color: $bg-hover;
-    border-color: $border-secondary;
-  }
-}
-
-// Media player styling
-@mixin media-control-button {
-  @include standard-button($spacing-sm);
-  font-size: $font-size-lg;
-  min-width: 32px;
-  min-height: 32px;
 } 
+
+
+.separator {
+  background-color: $border-primary;
+  min-height: 1px;
+}

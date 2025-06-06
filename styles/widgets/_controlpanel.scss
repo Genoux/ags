@@ -7,28 +7,23 @@
 
 window.control-panel-window {
     @include window-base;
-    padding: $spacing-lg;
 }
 
 box.ControlPanel {
-    @include panel-base;
-    min-width: 300px;
+    font-family: $font-family-primary;
+    background-color: $bg-primary;
+    border-radius: $radius-lg;
+    border: $border-width solid $border-tertiary;
+    padding: $spacing-md;
     margin: $spacing-md;
-
+    
     box.notification-center-container {
+        @include section-container;
         border: none;
-        min-width: 300px;
-        background-color: transparent;
+        padding: 0;
     }
     box.notification-section {
-        @include section-container;
-        min-width: 300px;
         border: none;
-
-        .notification-container {
-            border: none
-        }
-
     }
     box.audio-section {
         @include section-container;

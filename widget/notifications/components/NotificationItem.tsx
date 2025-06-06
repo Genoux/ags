@@ -1,152 +1,294 @@
 import { Gtk } from "astal/gtk3"
-import { GLib, Gio } from "astal"
+import { GLib } from "astal"
 import Hyprland from "gi://AstalHyprland"
 import { NotificationProps } from "../types"
 import { getValidIcon, formatTime } from "../utils"
-import { notificationStore } from "../store"
 
 // =============================================================================
 // Helper Functions
 // =============================================================================
 
-function focusSourceApp(notificationData: any): void {
+function openApp(notification: any): void {
+    if (!notification) {
+        console.log("No notification data provided")
+        return
+    }
+    
+    const { desktopEntry, appName } = notification
+    console.log("Opening app:", { desktopEntry, appName })
+    
+    // Check for web notification URL
+    let notificationUrl = null
     try {
-        // Add guard to prevent issues with null/undefined notification data
-        if (!notificationData) {
-            console.log("No notification data provided")
-            return
+        // Try to extract URL from notification hints or body
+        if (notification.hints) {
+            // Common hint keys for URLs
+            notificationUrl = notification.hints['x-canonical-private-synchronous'] ||
+                            notification.hints['desktop-entry'] ||
+                            notification.hints['origin-url'] ||
+                            notification.hints['action-default']
         }
         
-        console.log("Attempting to focus app for:", notificationData.appName || notificationData.desktopEntry || "unknown")
-        
-        const hyprland = Hyprland.get_default()
-        
-        // Add guard for hyprland availability
-        if (!hyprland) {
-            console.log("Hyprland not available")
-            return
-        }
-        
-        // First, try to find and focus an existing window
-        if (notificationData.desktopEntry || notificationData.appName) {
-            let clients: any[] = []
-            try {
-                clients = hyprland.get_clients()
-            } catch (error) {
-                console.log("Failed to get Hyprland clients:", error)
-                return // Return early if we can't get clients
+        // If no URL in hints, try to extract from body or summary
+        if (!notificationUrl) {
+            const text = (notification.body || notification.summary || '').toLowerCase()
+            const urlMatch = text.match(/(https?:\/\/[^\s]+)/i)
+            if (urlMatch) {
+                notificationUrl = urlMatch[1]
             }
+        }
+        
+        console.log("Detected notification URL:", notificationUrl)
+    } catch (error) {
+        console.log("Could not extract URL from notification:", error)
+    }
+    
+    // Check if app is already running
+    const isAppRunning = checkIfAppIsRunning(desktopEntry, appName)
+    
+    if (isAppRunning) {
+        console.log("App is already running, focusing existing window")
+        focusExistingApp(desktopEntry, appName, notificationUrl)
+        return
+    }
+    
+    console.log("App not running, launching new instance")
+    launchNewApp(desktopEntry, appName, notificationUrl)
+}
+
+function checkIfAppIsRunning(desktopEntry: string, appName: string): boolean {
+    try {
+        const hyprland = Hyprland.get_default()
+        if (!hyprland) return false
+        
+        const clients = hyprland.get_clients()
+        if (!clients) return false
+        
+        const searchTerms = [
+            desktopEntry?.toLowerCase(),
+            appName?.toLowerCase(),
+            // Common mappings
+            ...(appName?.toLowerCase().includes('firefox') ? ['firefox'] : []),
+            ...(appName?.toLowerCase().includes('chrome') ? ['google-chrome', 'chrome'] : []),
+            ...(desktopEntry?.toLowerCase().includes('firefox') ? ['firefox'] : []),
+            ...(desktopEntry?.toLowerCase().includes('chrome') ? ['google-chrome', 'chrome'] : [])
+        ].filter(Boolean)
+        
+        const isRunning = clients.some(client => {
+            if (!client) return false
             
-            const appName = notificationData.appName?.toLowerCase() || ""
-            const desktopEntry = notificationData.desktopEntry?.toLowerCase() || ""
+            const clientClass = client.class?.toLowerCase() || ""
+            const clientInitialClass = client.initialClass?.toLowerCase() || ""
             
-            // Look for a matching client window
-            const matchingClient = clients.find(client => {
-                if (!client) return false
-                
-                try {
-                    const clientClass = client.class?.toLowerCase() || ""
-                    const clientTitle = client.title?.toLowerCase() || ""
-                    const clientInitialClass = client.initialClass?.toLowerCase() || ""
-                    
-                    return (
-                        // Match by desktop entry
-                        (desktopEntry && (
-                            clientClass.includes(desktopEntry) ||
-                            clientInitialClass.includes(desktopEntry)
-                        )) ||
-                        // Match by app name
-                        (appName && (
-                            clientClass.includes(appName) ||
-                            clientTitle.includes(appName) ||
-                            clientInitialClass.includes(appName)
-                        ))
-                    )
-                } catch (error) {
-                    console.log("Error checking client:", error)
-                    return false
-                }
+            return searchTerms.some(term => 
+                clientClass.includes(term) || 
+                clientInitialClass.includes(term)
+            )
+        })
+        
+        console.log(`App running check: ${isRunning} (searched for: ${searchTerms.join(', ')})`)
+        return isRunning
+    } catch (error) {
+        console.log("Error checking if app is running:", error)
+        return false
+    }
+}
+
+function focusExistingApp(desktopEntry: string, appName: string, url?: string): void {
+    try {
+        const hyprland = Hyprland.get_default()
+        if (!hyprland) return
+        
+        const clients = hyprland.get_clients()
+        if (!clients) return
+        
+        const searchTerms = [
+            desktopEntry?.toLowerCase(),
+            appName?.toLowerCase(),
+            // Common mappings
+            ...(appName?.toLowerCase().includes('firefox') ? ['firefox'] : []),
+            ...(appName?.toLowerCase().includes('chrome') ? ['google-chrome', 'chrome'] : []),
+            ...(desktopEntry?.toLowerCase().includes('firefox') ? ['firefox'] : []),
+            ...(desktopEntry?.toLowerCase().includes('chrome') ? ['google-chrome', 'chrome'] : [])
+        ].filter(Boolean)
+        
+        const matchingClient = clients.find(client => {
+            if (!client) return false
+            
+            const clientClass = client.class?.toLowerCase() || ""
+            const clientInitialClass = client.initialClass?.toLowerCase() || ""
+            
+            return searchTerms.some(term => 
+                clientClass.includes(term) || 
+                clientInitialClass.includes(term)
+            )
+        })
+        
+        if (matchingClient) {
+            console.log(`Found matching client:`, {
+                class: matchingClient.class,
+                address: matchingClient.address,
+                workspace: matchingClient.workspace?.id
             })
             
-            if (matchingClient && matchingClient.address) {
-                // Focus the existing window
-                try {
-                    GLib.spawn_command_line_async(`hyprctl dispatch focuswindow address:${matchingClient.address}`)
-                    console.log(`Focused existing Hyprland window: ${matchingClient.class}`)
-                    return
-                } catch (error) {
-                    console.log(`Failed to focus existing window: ${error}`)
-                }
-            }
-        }
-        
-        //TODO: Simpler way to launch app
-        // If no existing window found, try to launch the application
-        if (notificationData.desktopEntry) {
-            let desktopEntry = notificationData.desktopEntry
-            
-            // Normalize common desktop entries (handle case variations)
-            const normalizedEntry = desktopEntry.toLowerCase()
-            if (normalizedEntry === 'firefox') {
-                desktopEntry = 'firefox'
-            } else if (normalizedEntry === 'chromium') {
-                desktopEntry = 'chromium'
-            } else if (normalizedEntry === 'code') {
-                desktopEntry = 'code'
-            }
-            
-            // Try launching via desktop file
-            try {
-                GLib.spawn_command_line_async(`hyprctl dispatch exec gtk-launch ${desktopEntry}`)
-                console.log(`Launched app via Hyprland: ${desktopEntry}`)
-                return
-            } catch (error) {
-                console.log(`Failed to launch via Hyprland: ${error}`)
-            }
-            
-            // Alternative: try direct launch
-            try {
-                GLib.spawn_command_line_async(`hyprctl dispatch exec ${desktopEntry}`)
-                console.log(`Launched app directly via Hyprland: ${desktopEntry}`)
-                return
-            } catch (error) {
-                console.log(`Failed to launch directly via Hyprland: ${error}`)
-            }
-        }
-        
-        // Fallback: try using app name
-        if (notificationData.appName) {
-            const appName = notificationData.appName.toLowerCase()
-            
-            // Try common application launch patterns with Hyprland dispatch
-            const launchCommands = [
-                `hyprctl dispatch exec ${appName}`,
-                `hyprctl dispatch exec gtk-launch ${appName}`,
-                `hyprctl dispatch exec gtk-launch ${appName}.desktop`,
+            // Try multiple methods to focus the window
+            const focusMethods = [
+                // Method 1: Focus by class (most reliable)
+                () => GLib.spawn_command_line_async(`hyprctl dispatch focuswindow class:${matchingClient.class}`),
+                // Method 2: Focus by address (if available)
+                ...(matchingClient.address ? [() => GLib.spawn_command_line_async(`hyprctl dispatch focuswindow address:${matchingClient.address}`)] : []),
+                // Method 3: Switch to workspace then focus by class
+                ...(matchingClient.workspace?.id ? [() => {
+                    GLib.spawn_command_line_async(`hyprctl dispatch workspace ${matchingClient.workspace.id}`)
+                    setTimeout(() => {
+                        GLib.spawn_command_line_async(`hyprctl dispatch focuswindow class:${matchingClient.class}`)
+                    }, 100)
+                }] : [])
             ]
             
-            for (const cmd of launchCommands) {
+            let focused = false
+            for (const method of focusMethods) {
                 try {
-                    GLib.spawn_command_line_async(cmd)
-                    console.log(`Launched app via Hyprland fallback: ${cmd}`)
-                    return
+                    method()
+                    console.log(`Successfully focused window using method`)
+                    focused = true
+                    break
                 } catch (error) {
-                    // Continue to next attempt
+                    console.log(`Focus method failed: ${error}`)
                 }
             }
+            
+            if (!focused) {
+                console.log("All focus methods failed, falling back to app launch")
+                launchNewApp(desktopEntry, appName, url)
+                return
+            }
+            
+            // If we have a URL and it's a browser, open the URL in the existing instance
+            if (url && (searchTerms.some(term => ['firefox', 'chrome'].some(browser => term.includes(browser))))) {
+                setTimeout(() => {
+                    try {
+                        // Try to open URL in existing browser instance
+                        if (searchTerms.some(term => term.includes('firefox'))) {
+                            GLib.spawn_command_line_async(`firefox --new-tab "${url}"`)
+                        } else if (searchTerms.some(term => term.includes('chrome'))) {
+                            GLib.spawn_command_line_async(`google-chrome --new-tab "${url}"`)
+                        }
+                        console.log(`Opened URL in existing browser: ${url}`)
+                    } catch (error) {
+                        console.log(`Failed to open URL in existing browser: ${error}`)
+                    }
+                }, 500) // Small delay to ensure window is focused first
+            }
+        } else {
+            console.log("No matching client found, launching new app")
+            launchNewApp(desktopEntry, appName, url)
         }
-        
-        console.log(`Could not focus/launch app for notification from ${notificationData.appName || 'unknown app'}`)
     } catch (error) {
-        console.error("Error focusing source app on Hyprland:", error)
+        console.error("Error focusing existing app:", error)
+        // Fallback to launching new app
+        launchNewApp(desktopEntry, appName, url)
     }
+}
+
+function launchNewApp(desktopEntry: string, appName: string, url?: string): void {
+    // For browser notifications with URL, try to open with URL
+    if (url && (desktopEntry?.toLowerCase().includes('firefox') || 
+               desktopEntry?.toLowerCase().includes('chrome') ||
+               desktopEntry?.toLowerCase().includes('chromium') ||
+               appName?.toLowerCase().includes('firefox') ||
+               appName?.toLowerCase().includes('chrome'))) {
+        
+        const browserCommands = [
+            `firefox "${url}"`,
+            `firefox-esr "${url}"`,
+            `google-chrome "${url}"`,
+            `google-chrome-stable "${url}"`,
+            `chromium "${url}"`,
+            `chromium-browser "${url}"`
+        ]
+        
+        for (const cmd of browserCommands) {
+            try {
+                GLib.spawn_command_line_async(cmd)
+                console.log(`Opened URL in new browser: ${cmd}`)
+                return
+            } catch (error) {
+                console.log(`Failed to open URL with ${cmd}: ${error}`)
+            }
+        }
+    }
+    
+    // Fallback: try desktop entry with URL (for browsers that support it)
+    if (url && desktopEntry) {
+        try {
+            GLib.spawn_command_line_async(`gtk-launch ${desktopEntry.toLowerCase()} "${url}"`)
+            console.log(`Launched with URL: ${desktopEntry.toLowerCase()} ${url}`)
+            return
+        } catch (error) {
+            console.log(`Failed to launch with URL: ${error}`)
+        }
+    }
+    
+    // Standard app launching
+    if (desktopEntry) {
+        const desktopVariations = [
+            desktopEntry.toLowerCase(),
+            desktopEntry,
+            desktopEntry.toLowerCase() + '.desktop',
+            desktopEntry + '.desktop'
+        ]
+        
+        for (const variant of desktopVariations) {
+            try {
+                const command = url ? 
+                    `gtk-launch ${variant} "${url}"` : 
+                    `gtk-launch ${variant}`
+                    
+                GLib.spawn_command_line_async(command)
+                console.log(`Launched app: ${command}`)
+                return
+            } catch (error) {
+                console.log(`Failed to launch ${variant}: ${error}`)
+            }
+        }
+    }
+    
+    // Try common app name patterns
+    if (appName) {
+        const nameVariations = [
+            appName.toLowerCase(),
+            appName.toLowerCase().replace(/\s+/g, '-'),
+            appName.toLowerCase().replace(/\s+/g, ''),
+            // Common variations
+            ...(appName.toLowerCase().includes('firefox') ? ['firefox', 'firefox-esr'] : []),
+            ...(appName.toLowerCase().includes('chrome') ? ['google-chrome', 'google-chrome-stable'] : []),
+            ...(appName.toLowerCase().includes('code') ? ['code', 'codium'] : [])
+        ]
+        
+        for (const variant of nameVariations) {
+            try {
+                const command = url ? 
+                    `${variant} "${url}"` : 
+                    variant
+                    
+                GLib.spawn_command_line_async(command)
+                console.log(`Launched app by name: ${command}`)
+                return
+            } catch (error) {
+                console.log(`Failed to launch ${variant}: ${error}`)
+            }
+        }
+    }
+    
+    console.warn(`Could not launch app for notification from ${appName || desktopEntry || 'unknown'}`)
 }
 
 // =============================================================================
 // Sub-components
 // =============================================================================
 
-function NotificationHeader({ notification, timestamp, onDismiss, onMarkRead }: NotificationProps) {
+function NotificationHeader({ notification, timestamp, onDismiss }: NotificationProps) {
     const appIcon = getValidIcon(
         notification.appIcon, 
         notification.desktopEntry, 
@@ -154,30 +296,32 @@ function NotificationHeader({ notification, timestamp, onDismiss, onMarkRead }: 
     )
 
     return (
-        <box className="notification-header" spacing={4}>
-            <icon className="app-icon" icon={appIcon} />
+        <box className="notification-header" spacing={8}>
+            <box className="app-info" spacing={8}>
+                <icon className="app-icon" icon={appIcon} />
+                <label 
+                    className="app-name"
+                    label={notification.appName || "Unknown App"}
+                    halign={Gtk.Align.START}
+                />
+            </box>
             
-            <label 
-                className="app-name"
-                label={notification.appName || "Unknown App"}
-                hexpand
-                halign={Gtk.Align.START}
-            />
+            <box hexpand /> {/* Spacer */}
             
             <label 
                 className="timestamp"
                 label={formatTime(timestamp)}
             />
             
-            <box className="action-buttons">
-                {onDismiss && (
-                    <button 
-                        className="dismiss-btn"
-                        onClicked={onDismiss}>
-                        <icon icon="window-close-symbolic" />
-                    </button>
-                )}
-            </box>
+            {onDismiss && (
+                <button 
+                    className="close-btn"
+                    onClicked={onDismiss}
+                    tooltip_text="Dismiss notification"
+                >
+                    <icon icon="window-close-symbolic" />
+                </button>
+            )}
         </box>
     )
 }
@@ -192,7 +336,7 @@ function NotificationContent({
     const hasImage = notification.image && notification.image.trim() !== ""
 
     return (
-        <box className="notification-content">
+        <box className="notification-content" spacing={8}>
             {hasImage && (
                 <box 
                     className="notification-image"
@@ -200,7 +344,7 @@ function NotificationContent({
                 />
             )}
             
-            <box className="text-content" vertical>
+            <box className="text-content" vertical spacing={4}>
                 {summary && (
                     <label 
                         className="summary"
@@ -225,79 +369,6 @@ function NotificationContent({
     )
 }
 
-function NotificationActions({ 
-    notification, 
-    onActionClick 
-}: Pick<NotificationProps, 'notification' | 'onActionClick'>) {
-    const actions = notification.get_actions()
-
-    return (
-        <box className="notification-actions">
-            {actions.map((action, index) => {
-                try {
-                    // Try to destructure, but handle malformed objects
-                    const { label, id } = action || {}
-                    console.log(`Action ${index}:`, { label, id })
-                    
-                    // Skip invalid actions
-                    if (!label && !id) {
-                        console.warn(`Skipping invalid action at index ${index}:`, action)
-                        return null
-                    }
-                    
-                    // Use destructured values with fallbacks
-                    const actionLabel = label || `Action ${index + 1}`
-                    const actionId = id || index.toString()
-                    
-                    return (
-                        <button 
-                            className="action-button"
-                            onClicked={() => {
-                                try {
-                                    // Store notification data before invoking action to prevent accessing freed objects
-                                    const notificationData = {
-                                        id: notification.id,
-                                        desktopEntry: notification.desktopEntry,
-                                        appName: notification.appName,
-                                        appIcon: notification.appIcon
-                                    }
-                                    
-                                    console.log("Invoking action with ID:", actionId)
-                                    
-                                    // Invoke the action on the notification
-                                    // The NotificationStore will automatically handle the "resolved" signal
-                                    // if this action dismisses the notification
-                                    notification.invoke(actionId)
-                                    
-                                    // Add a small delay before focusing to prevent race conditions
-                                    // Use stored data instead of accessing notification object directly
-                                    setTimeout(() => {
-                                        try {
-                                            focusSourceApp(notificationData)
-                                        } catch (error) {
-                                            console.error("Error focusing app after delay:", error)
-                                        }
-                                    }, 50)
-                                    
-                                    if (onActionClick) {
-                                        onActionClick()
-                                    }
-                                } catch (error) {
-                                    console.error("Failed to invoke notification action:", error)
-                                }
-                            }}>
-                            <label label={actionLabel} />
-                        </button>
-                    )
-                } catch (error) {
-                    console.error(`Error processing action ${index}:`, error, action)
-                    return null
-                }
-            }).filter(Boolean)} {/* Filter out null values */}
-        </box>
-    )
-}
-
 // =============================================================================
 // Main Component
 // =============================================================================
@@ -314,20 +385,79 @@ export default function NotificationItem({
     showActions = true
 }: NotificationProps) {
     const readClass = isRead ? "read" : "unread"
+    const actions = notification.get_actions() || []
+    const hasActions = showActions && actions.length > 0
     
-    // Check if notification has actions
-    const actions = notification.get_actions()
-    const hasActions = showActions && actions && actions.length > 0
+    // Check if notification has an associated app to launch
+    const hasApp = notification.desktopEntry || 
+                  (notification.appName && 
+                   notification.appName !== "notify-send" && 
+                   notification.appName !== "Unknown App" &&
+                   notification.appName.trim() !== "")
+    
+    const eventboxProps = hasApp ? {
+        className: `notification ${readClass} clickable`,
+        onButtonPressEvent: () => {
+            try {
+                // Store notification data before any operations
+                const notificationData = {
+                    desktopEntry: notification.desktopEntry,
+                    appName: notification.appName,
+                    id: notification.id
+                }
+                
+                // Mark as read when clicked
+                onMarkRead?.()
+                
+                // First, try to invoke the default action (like action button did)
+                try {
+                    const actions = notification.get_actions() || []
+                    const defaultAction = actions.find(action => 
+                        action.id === "default" || 
+                        action.id === "activate" ||
+                        actions.length === 1 // If only one action, use it
+                    )
+                    
+                    if (defaultAction) {
+                        console.log("Invoking default action:", defaultAction.id)
+                        notification.invoke(defaultAction.id)
+                        
+                        // Use stored data to open app after a delay (like action button did)
+                        setTimeout(() => {
+                            try {
+                                openApp(notificationData)
+                            } catch (error) {
+                                console.error("Error opening app after action:", error)
+                            }
+                        }, 100)
+                        
+                        // Call the action callback like the original action button did
+                        onActionClick?.()
+                    } else {
+                        // No default action, just open the app directly
+                        openApp(notificationData)
+                    }
+                } catch (actionError) {
+                    console.log("No action to invoke, opening app directly:", actionError)
+                    // Fallback to direct app opening if action fails
+                    openApp(notificationData)
+                }
+            } catch (error) {
+                console.error("Error handling notification click:", error)
+            }
+            return false // Allow event to propagate
+        }
+    } : {
+        className: `notification ${readClass}`
+    }
 
     return (
-        <eventbox 
-            className={`notification ${readClass}`}>
-            <box className="notification-container" vertical spacing={8}>
+        <eventbox {...eventboxProps}>
+            <box className="notification-container" vertical>
                 <NotificationHeader 
                     notification={notification}
                     timestamp={timestamp}
                     onDismiss={onDismiss}
-                    onMarkRead={onMarkRead}
                 />
                 
                 <box className="separator" />
@@ -338,13 +468,7 @@ export default function NotificationItem({
                     displayBody={displayBody}
                 />
                 
-                {hasActions && (
-                    <NotificationActions 
-                        notification={notification}
-                        onActionClick={onActionClick}
-                    />
-                )}
             </box>
         </eventbox>
     )
-} 
+}

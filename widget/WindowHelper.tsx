@@ -15,6 +15,7 @@ interface WindowConfig {
 export function createWindowManager(config: WindowConfig) {
     const isVisible = Variable(false)
     let window: Widget.Window | null = null
+    let signalHandlers: { widget: any, id: number }[] = []
 
     function show() {
         const win = createWindow()
@@ -24,15 +25,37 @@ export function createWindowManager(config: WindowConfig) {
     }
 
     function hide() {
-        const win = createWindow()
-        win.visible = false
+        if (window) {
+            window.visible = false
+        }
         isVisible.set(false)
     }
 
-    // Enhanced functions for click-outside functionality
-    let enhancedShow = show
-    let enhancedHide = hide
-    let overlay: Widget.Window | null = null
+    function cleanup() {
+        // Disconnect all signal handlers with proper error handling
+        signalHandlers.forEach(({ widget, id }) => {
+            try {
+                if (widget && typeof widget.disconnect === 'function') {
+                    widget.disconnect(id)
+                }
+            } catch (error) {
+                // Handler might already be disconnected or widget destroyed
+                console.warn(`Failed to disconnect signal handler ${id}:`, error)
+            }
+        })
+        signalHandlers = []
+        
+        // Cleanup main window
+        if (window) {
+            try {
+                window.destroy()
+            } catch (error) {
+                // Window might already be destroyed
+                console.warn("Failed to destroy window:", error)
+            }
+            window = null
+        }
+    }
 
     function createWindow() {
         if (window) {
@@ -60,43 +83,68 @@ export function createWindowManager(config: WindowConfig) {
         
         // Add custom click handler if provided
         if (config.onWindowClick) {
-            window.connect("button-press-event", () => {
+            const handlerId = window.connect("button-press-event", () => {
                 config.onWindowClick!()
                 return true
             })
+            signalHandlers.push({ widget: window, id: handlerId })
         }
 
-        // Always enable click-outside-to-close behavior
-        console.log("Setting up click-outside-to-close for", config.name)
-        
-        // Use a transparent overlay window to catch outside clicks
-        overlay = new Widget.Window({
-            name: `${config.name}-click-overlay`,
-            layer: Astal.Layer.OVERLAY,
-            exclusivity: Astal.Exclusivity.IGNORE,
-            anchor: Astal.WindowAnchor.TOP | Astal.WindowAnchor.BOTTOM | 
-                    Astal.WindowAnchor.LEFT | Astal.WindowAnchor.RIGHT,
-            visible: false,
-            child: new Widget.EventBox({
-                onButtonPressEvent: () => {
-                    console.log("Click outside detected via overlay, closing", config.name)
-                    enhancedHide()
-                    overlay!.visible = false
-                    return true
-                }
-            })
+        // Implement proper click-outside-to-close behavior
+            console.log("Setting up click-outside-to-close for", config.name)
+            
+        // Connect to root window to detect clicks outside
+        try {
+            const screen = window.get_screen()
+            const rootWindow = screen?.get_root_window()
+            
+            if (rootWindow) {
+                const rootClickHandlerId = rootWindow.connect("button-press-event", (widget: any, event: any) => {
+                    if (!isVisible.get() || !window) {
+                        return false
+                    }
+
+                    try {
+                        // Get window allocation - add null check for TypeScript
+                        if (!window) return false
+                        const currentWindow = window // Store reference after null check
+                        const allocation = currentWindow.get_allocation()
+                        const [winX, winY] = currentWindow.get_position()
+                        
+                        // Get event coordinates
+                        const [eventX, eventY] = event.get_root_coords()
+                        
+                        // Check if click is outside window bounds
+                        const isOutside = (
+                            eventX < winX || 
+                            eventX > winX + allocation.width ||
+                            eventY < winY || 
+                            eventY > winY + allocation.height
+                        )
+                        
+                        if (isOutside) {
+                            console.log("Click outside detected for", config.name, "- closing window")
+                            hide()
+                        }
+                    } catch (error) {
+                        console.warn("Error in click-outside detection:", error)
+                    }
+                    
+                    return false
+                })
+                signalHandlers.push({ widget: rootWindow, id: rootClickHandlerId })
+            } else {
+                console.warn("Could not get root window for click-outside detection")
+            }
+        } catch (error) {
+            console.warn("Failed to setup click-outside detection:", error)
+        }
+
+        // Cleanup when main window is destroyed
+        const destroyHandlerId = window.connect("destroy", () => {
+            cleanup()
         })
-
-        // Show/hide overlay with main window
-        enhancedShow = () => {
-            show()
-            overlay!.visible = true
-        }
-        
-        enhancedHide = () => {
-            hide()
-            overlay!.visible = false
-        }
+        signalHandlers.push({ widget: window, id: destroyHandlerId })
 
         return window
     }
@@ -104,13 +152,14 @@ export function createWindowManager(config: WindowConfig) {
     const manager = {
         toggle: () => {
             if (isVisible.get()) {
-                enhancedHide()
+                hide()
             } else {
-                enhancedShow()
+                show()
             }
         },
-        show: enhancedShow,
-        hide: enhancedHide,
+        show,
+        hide,
+        cleanup,
         isVisible,
         content: config.content,
         createWindow

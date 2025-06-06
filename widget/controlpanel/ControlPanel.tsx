@@ -17,7 +17,7 @@ const controlPanel = createWindowManager({
 // Main export - can return individual widgets or combined
 function ControlPanel() {
   return (
-    <box className="ControlPanel" vertical spacing={4}>
+    <box className="ControlPanel" vertical spacing={8} hexpand>
       <box className="notification-section">
         <NotificationCenterWidget />
       </box>

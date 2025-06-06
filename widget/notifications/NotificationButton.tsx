@@ -14,7 +14,7 @@ export default function NotificationButton({
             onClicked={() => {
                 notificationCenterVisible.set(!notificationCenterVisible.get())
             }}>
-            <box halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER}>
+            <box spacing={4} halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER}>
                 <icon 
                     className="notification-icon"
                     icon={bind(notificationStore.totalCount).as((count: number) => 
@@ -25,12 +25,11 @@ export default function NotificationButton({
                 {/* Total count badge */}
                 {showCount && (
                     <box 
-                        className="badge-container"
-                        halign={Gtk.Align.START}
-                        valign={Gtk.Align.START}
+                        className="badge"
+                        halign={Gtk.Align.CENTER}
+                        valign={Gtk.Align.CENTER}
                         visible={bind(notificationStore.totalCount).as((count: number) => count > 0)}>
                         <label 
-                            className="badge"
                             halign={Gtk.Align.CENTER}
                             valign={Gtk.Align.CENTER}
                             label={bind(notificationStore.totalCount).as((count: number) => 
