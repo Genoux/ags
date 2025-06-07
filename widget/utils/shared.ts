@@ -36,18 +36,3 @@ export function getAppIcon(appName?: string): string {
   // Final fallback
   return 'application-x-executable';
 }
-
-/**
- * Variant specifically for notifications that tries app_icon first, then app_name
- */
-export function getNotificationIcon(notification: any): string {
-  const iconTheme = Gtk.IconTheme.get_default();
-  
-  // Try explicit app_icon first
-  if (notification.app_icon && iconTheme.has_icon(notification.app_icon)) {
-    return notification.app_icon;
-  }
-  
-  // Fall back to app name logic
-  return getAppIcon(notification.app_name);
-}

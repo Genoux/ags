@@ -1,7 +1,7 @@
 import { App } from "astal/gtk3"
 import style from "./styles/main.scss"
 import Bar from "./widget/Bar"
-import NotificationPopup from "./widget/notifications/NotificationPopup"
+import { NotificationPopup } from "./widget/notifications"
 
 App.start({
     css: style,

@@ -1,7 +1,7 @@
 import { Gtk } from "astal/gtk3"
 import { GLib } from "astal"
 import { bind } from "astal"
-import { showConfirmation, ConfirmationOverlay, confirmationVisible } from "./ConfirmationOverlay"
+import { showConfirmation, ConfirmationOverlay, confirmationVisible } from "./components/ConfirmationOverlay"
 
 // =============================================================================
 // System Control Widget

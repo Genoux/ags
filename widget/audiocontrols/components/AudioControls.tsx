@@ -1,7 +1,6 @@
 import { Astal, Gtk } from "astal/gtk3"
 import Wp from "gi://AstalWp"
 import { bind, Variable } from "astal"
-import { createWindowManager } from "../WindowHelper"
 
 // Utility Functions
 function volumeIcon(volume: number, muted: boolean) {
@@ -12,7 +11,7 @@ function volumeIcon(volume: number, muted: boolean) {
     return "audio-volume-high-symbolic"
 }
 
-function AudioControlsComponent(): Gtk.Widget {
+export default function AudioControlsComponent(): Gtk.Widget {
     const audio = Wp.get_default()
     
     if (!audio) {
@@ -96,31 +95,4 @@ function AudioControlsComponent(): Gtk.Widget {
             label={bind(sliderValue).as(v => `${Math.round(v * 100)}%`)}
         />
     </box>
-}
-
-export const audioControls = createWindowManager({
-    name: "audio-control",
-    className: "audio-control-window", 
-    content: AudioControlsComponent(),
-    globalToggleName: "toggleAudioControl"
-})
-
-export function AudioButton() {
-    const audio = Wp.get_default()
-    const speaker = audio?.get_default_speaker()
-
-    return (
-        <button
-            className={speaker ? bind(speaker, "mute").as(muted => 
-                muted ? "audio-button active" : "audio-button"
-            ) : "audio-button"}
-            onClicked={() => {
-                if (speaker) {
-                    speaker.mute = !speaker.mute
-                }
-            }}
-        >
-            <icon icon={speaker ? bind(speaker, "volumeIcon") : "audio-volume-muted-symbolic"} />
-        </button>
-    )
 } 

@@ -8,7 +8,7 @@ import KeyboardSwitcher from "./keyboardswitcher";
 import AudioButton from "./audiocontrols";
 import TimeDisplay from "./timedisplay";
 import ControlPanelButton from "./controlpanel";
-import NotificationButton from "./notifications/NotificationButton";
+import { NotificationButton } from "./notifications";
 import SystemTray from "./systemtray";
 
 function LeftSection() {

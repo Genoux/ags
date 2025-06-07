@@ -1,1 +1,2 @@
-export  { default as SystemControl } from "./SystemControl" 
+// SystemControl Widget - Complex Pattern (multiple components)
+export { default as SystemControl } from "./Widget" 

@@ -1,8 +1,8 @@
 import { Widget, Astal, Gtk } from "astal/gtk3"
 import { Variable, bind } from "astal"
-import { createWindowManager } from "../WindowHelper"
+import { createWindowManager } from "../utils"
 import Mpris from "gi://AstalMpris"
-import MediaPlayerComponent from "./MediaPlayer"
+import MediaPlayerComponent from "./components/MediaPlayer"
 
 // Global state management
 export const playerInteractions = new Map<string, number>()

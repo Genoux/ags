@@ -1,8 +1,10 @@
-import { Variable, bind, exec, subprocess } from "astal"
+import { Variable, exec, subprocess } from "astal"
 import GLib from "gi://GLib"
 
+// Widget Logic - 100% State & Business Logic
+
 // Variable to store the current keyboard language
-const keyboardLang = Variable("EN")
+export const keyboardLang = Variable("EN")
 
 // Function to map layout names to display format
 function mapLayoutName(layout: string): string {
@@ -44,7 +46,7 @@ function getCurrentLayout(): string {
 }
 
 // Function to switch keyboard layout
-function switchKeyboardLayout() {
+export function switchKeyboardLayout() {
     try {
         // Get all keyboards and switch them
         const devicesOutput = exec("hyprctl devices -j")
@@ -94,18 +96,4 @@ try {
     console.log("Failed to connect to Hyprland socket, using fallback")
     // Fallback to minimal polling (only if socket fails)
     keyboardLang.poll(2000, getCurrentLayout)
-}
-
-export default function KeyboardSwitcher() {
-    return (
-        <button 
-            className="keyboard-lang-widget"
-            onClicked={switchKeyboardLayout}
-        >
-            <label label={bind(keyboardLang)} />
-        </button>
-    )
-}
-
-// Export the keyboard language variable for other components to use
-export { keyboardLang } 
+} 
