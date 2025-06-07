@@ -7,44 +7,41 @@ import { getCountableNotificationCount } from "./utils"
 const notifications = Notifd.get_default()
 let notificationCenter: any = null
 
-// Simple notification button for the bar
 export default function NotificationButton() {
-    return (
-        <button
-            className={bind(notifications, "notifications").as(notifs => {
-                const count = getCountableNotificationCount(notifs)
-                return `NotificationButton${count > 0 ? " has-notifications" : ""}`
-            })}
-            tooltip_text="Notifications"
-            onClicked={() => {
-                if (!notificationCenter) {
-                    // Create notification center on first click
-                    notificationCenter = NotificationCenter()
-                }
-                // Toggle visibility using the attached toggle function
-                notificationCenter.toggle()
-            }}
+  return (
+    <button
+      className={bind(notifications, "notifications").as(notifs => {
+        const count = getCountableNotificationCount(notifs)
+        return `NotificationButton${count > 0 ? " has-notifications" : ""}`
+      })}
+      tooltip_text="Notifications"
+      onClicked={() => {
+        if (!notificationCenter) {
+          notificationCenter = NotificationCenter()
+        }
+        notificationCenter.toggle()
+      }}
+    >
+      <box spacing={4}>
+        <icon
+          className="notification-icon"
+          icon={"notification"}
+        />
+        <box
+          className="badge"
+          halign={Gtk.Align.CENTER}
+          valign={Gtk.Align.CENTER}
+          visible={bind(notifications, "notifications").as(notifs => {
+            const count = getCountableNotificationCount(notifs)
+            return count > 0
+          })}
         >
-            <box spacing={4}>
-                <icon 
-                    className="notification-icon"
-                    icon={"notification"}
-                />
-                <box 
-                    className="badge"
-                    halign={Gtk.Align.CENTER}
-                    valign={Gtk.Align.CENTER}
-                    visible={bind(notifications, "notifications").as(notifs => {
-                        const count = getCountableNotificationCount(notifs)
-                        return count > 0
-                    })}
-                >
-                    <label label={bind(notifications, "notifications").as(notifs => {
-                        const count = getCountableNotificationCount(notifs)
-                        return `${count}`
-                    })} />
-                </box>
-            </box>
-        </button>
-    )
+          <label label={bind(notifications, "notifications").as(notifs => {
+            const count = getCountableNotificationCount(notifs)
+            return `${count}`
+          })} />
+        </box>
+      </box>
+    </button>
+  )
 } 
