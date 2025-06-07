@@ -7,11 +7,11 @@
 .window-title {
     box {
         font-size: $font-size-lg;
-        
+        padding: 0 $spacing-sm;
         icon {
             font-size: $font-size-xl + 2px;
             color: $text-primary;
-            opacity: 0.8;
+            opacity: 0.9;
         }
     }
 } 

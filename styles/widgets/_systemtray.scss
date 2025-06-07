@@ -1,0 +1,44 @@
+@use "../abstracts/variables" as *;
+@use "../abstracts/mixins" as *;
+
+// =============================================================================
+// System Tray Widget Styling
+// =============================================================================
+
+.system-tray {
+  padding: $spacing-xs;
+  
+  // Tray items container
+  .systray-item {
+    @include button-base;
+    border-radius: $radius-xs;
+    transition: background $transition-fast;
+    
+    &:hover {
+      background: $bg-hover;
+    }
+    
+    &:active {
+      background: $bg-active;
+    }
+    
+    // Tray icon styling
+    .tray-icon {
+      opacity: 0.9;
+      transition: opacity $transition-fast;
+      font-size: 14px;
+      
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+  
+  // Debug label when no tray items
+  .tray-debug {
+    color: $text-tertiary;
+    font-size: $font-size-xs;
+    opacity: 0.6;
+    padding: $spacing-xs $spacing-sm;
+  }
+}

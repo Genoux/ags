@@ -1,200 +1,130 @@
-import { Astal, Gtk, Gdk } from "astal/gtk3";
-import { bind, Variable } from "astal";
-import { notificationStore } from "./store";
-import type { GroupedNotification } from "./store";
-import NotificationItem from "./components/NotificationItem";
-import { createWindowManager } from "../WindowHelper";
-import { dismissAllPopups } from "./components/NotificationPopup";
+import { bind, Variable } from "astal"
+import { Astal, Gdk, Gtk, App } from "astal/gtk3"
+import Notifd from "gi://AstalNotifd"
+import Notification from "./Notification"
+import { filterVisibleNotifications } from "./utils"
 
-// Global variable to control visibility
-export const notificationCenterVisible = Variable(false);
+const notifications = Notifd.get_default()
 
-interface NotificationCenterHeaderProps {
-  showCloseButton?: boolean;
-}
-
-function NotificationCenterHeader({
-  showCloseButton = true,
-}: NotificationCenterHeaderProps) {
-  return (
-    <box className="header">
-      <box spacing={6} halign={Gtk.Align.START}>
-        <label
-          className="title"
-          label="Notifications"
-          halign={Gtk.Align.START}
-        />
-
-        <box
-          className="badge"
-          halign={Gtk.Align.CENTER}
-          valign={Gtk.Align.CENTER}
-          visible={bind(notificationStore.unreadCount).as((count: number) => count > 0)}
-        >
-          <label
-            label={bind(notificationStore.unreadCount).as((count: number) =>
-              count > 0 ? `${count}` : ""
-            )}
-          />
+// Simple notification list component
+function NotificationList() {
+    return (
+        <box className="notification-list" vertical vexpand>
+            {bind(notifications, "notifications").as(notifs => {
+                const visibleNotifs = filterVisibleNotifications(notifs)
+                    .sort((a: any, b: any) => b.time - a.time) // Sort by time, newest first
+                
+                if (visibleNotifs.length === 0) {
+                    // Empty state
+                    return (
+                        <box 
+                            className="empty-state" 
+                            vertical 
+                            halign={Gtk.Align.CENTER}
+                            valign={Gtk.Align.CENTER}
+                            vexpand
+                            spacing={10}
+                        >
+                            <icon 
+                                className="empty-state-icon"
+                                icon="mail-read-symbolic" 
+                                pixel_size={48}
+                            />
+                            <label 
+                                className="empty-state-subtitle"
+                                label="You're all caught up!"
+                            />
+                        </box>
+                    )
+                }
+                
+                return visibleNotifs.map(notif => (
+                    <Notification notification={notif} isInCenter={true} />
+                ))
+            })}
         </box>
-      </box>
+    )
+}
 
-      <button
-        halign={Gtk.Align.END}
-        hexpand
-        className="clear-all-btn"
-        tooltip_text="Clear all notifications"
-        onClicked={() => notificationStore.dismissAll()}
-      >
-        <label label="Clear All" />
-      </button>
-
-      {showCloseButton && (
-        <button
-          className="close-btn"
-          tooltip_text="Close notification center"
-          onClicked={() => notificationCenterVisible.set(false)}
+// Simple notification center
+export default function NotificationCenter() {
+    const visible = Variable(false)
+    
+    const window = (
+        <window
+            className="NotificationCenter"
+            anchor={Astal.WindowAnchor.TOP | Astal.WindowAnchor.RIGHT | Astal.WindowAnchor.BOTTOM}
+            exclusivity={Astal.Exclusivity.IGNORE}
+            keymode={Astal.Keymode.ON_DEMAND}
+            visible={bind(visible)}
+            vexpand
+            onKeyPressEvent={(_, event) => {
+                if (event.get_keyval()[1] === Gdk.KEY_Escape) {
+                    visible.set(false)
+                }
+            }}
         >
-          <icon icon="window-close-symbolic" />
-        </button>
-      )}
-    </box>
-  );
-}
-
-// Export list component for reuse
-export function NotificationList() {
-  return (
-    <scrollable
-      className="notification-list"
-      vexpand
-      hexpand
-      heightRequest={200} // Fixed height for consistency
-      hscroll={Gtk.PolicyType.NEVER}
-      vscroll={Gtk.PolicyType.AUTOMATIC}
-    >
-      <box vertical>
-        {bind(notificationStore.groupedNotifications).as(
-          (groups: GroupedNotification[]) => {
-            if (groups.length === 0) {
-              return (
-                <box
-                  className="empty-state"
-                  valign={Gtk.Align.CENTER}
-                  halign={Gtk.Align.CENTER}
-                  vexpand
-                  hexpand
-                  vertical
-                  spacing={6}
-                >
-                  <label label="No notifications" />
+            <box className="notification-center-container" vertical>
+                <box className="header">
+                    <label className="title" label="Notifications" hexpand halign={Gtk.Align.START} />
+                    <button 
+                        className="close-btn"
+                        halign={Gtk.Align.END}
+                        onClicked={() => visible.set(false)}
+                    >
+                        <icon icon="window-close-symbolic" />
+                    </button>
                 </box>
-              );
-            }
-
-            return groups.map((group: GroupedNotification) => {
-              const { latestNotification, count, appName } = group;
-
-              const displaySummary =
-                count > 1
-                  ? `${latestNotification.notification.appName} (${count})`
-                  : undefined;
-
-              const displayBody =
-                count > 1
-                  ? `${latestNotification.notification.body} (and ${
-                      count - 1
-                    } more)`
-                  : undefined;
-
-              return (
-                <NotificationItem
-                  notification={latestNotification.notification}
-                  timestamp={latestNotification.timestamp}
-                  isRead={latestNotification.read}
-                  displaySummary={displaySummary}
-                  displayBody={displayBody}
-                  onDismiss={() => {
-                    if (count === 1) {
-                      notificationStore.dismiss(latestNotification.id);
-                    } else {
-                      notificationStore.dismissAllFromApp(appName);
-                    }
-                  }}
-                  onMarkRead={() => {
-                    if (count === 1) {
-                      notificationStore.markAsRead(latestNotification.id);
-                    } else {
-                      notificationStore.markAppAsRead(appName);
-                    }
-                  }}
-                  onActionClick={() => {
-                    setTimeout(() => {
-                      const notifications =
-                        notificationStore.notifications.get();
-                      const stillExists = notifications.find(
-                        (n) => n.id === latestNotification.id && !n.dismissed
-                      );
-
-                      if (stillExists) {
-                        console.log(
-                          "Notification still exists after action, force dismissing:",
-                          latestNotification.id
-                        );
-                        notificationStore.dismiss(latestNotification.id);
-                      }
-                    }, 200);
-
-                    notificationCenterVisible.set(false);
-                  }}
-                />
-              );
-            });
-          }
-        )}
-      </box>
-    </scrollable>
-  );
+                
+                <scrollable 
+                    hscroll={Gtk.PolicyType.NEVER}
+                    vscroll={Gtk.PolicyType.AUTOMATIC}
+                >
+                    <NotificationList />
+                </scrollable>
+                
+                <box className="header">
+                    <button 
+                        className="clear-all-btn"
+                        onClicked={() => {
+                            notifications.get_notifications().forEach(n => n.dismiss())
+                        }}
+                    >
+                        <label label="Clear All" />
+                    </button>
+                </box>
+            </box>
+        </window>
+    )
+    
+    // Attach toggle function to the window
+    ;(window as any).toggle = () => visible.set(!visible.get())
+    
+    return window
 }
 
-// Create the window manager
-const notificationCenterManager = createWindowManager({
-  name: "NotificationCenter",
-  className: "NotificationCenter",
-  content: (
-    <box className="notification-center-container" vertical>
-      <NotificationCenterHeader showCloseButton={true} />
-      <NotificationList />
-    </box>
-  ),
-  anchor:
-    Astal.WindowAnchor.TOP |
-    Astal.WindowAnchor.RIGHT |
-    Astal.WindowAnchor.BOTTOM,
-  globalToggleName: "toggleNotificationCenter",
-});
-
-// Sync the window manager visibility with our variable
-notificationCenterVisible.subscribe(() => {
-  if (notificationCenterVisible.get()) {
-    // Dismiss all popup notifications when opening the center
-    dismissAllPopups();
-    notificationCenterManager.show();
-  } else {
-    notificationCenterManager.hide();
-  }
-});
-
-// Export a standalone component for embedding in control panels (no window wrapper)
+// Export widget version for embedding in other components (like ControlPanel)
 export function NotificationCenterWidget() {
-  return (
-    <box className="notification-center-container" vertical hexpand vexpand>
-      <NotificationCenterHeader showCloseButton={false} />
-      <NotificationList />
-    </box>
-  );
-}
-
-export default function NotificationCenter(gdkmonitor: Gdk.Monitor) {
-  return notificationCenterManager.createWindow();
+    return (
+        <box className="notification-center-container" vertical>
+            <box className="header">
+                <label className="title" label="Notifications" hexpand halign={Gtk.Align.START} />
+                <button 
+                    className="clear-all-btn"
+                    onClicked={() => {
+                        notifications.get_notifications().forEach(n => n.dismiss())
+                    }}
+                >
+                    <label label="Clear All" />
+                </button>
+            </box>
+            
+            <scrollable 
+                hscroll={Gtk.PolicyType.NEVER}
+                vscroll={Gtk.PolicyType.AUTOMATIC}
+            >
+                <NotificationList />
+            </scrollable>
+        </box>
+    )
 }

@@ -33,12 +33,7 @@
             font-size: $font-size-sm;
             font-weight: 500;
             transition: color $transition-normal;
-            padding: 0;
-            margin: 0;
-            
-            &.special {
-                font-size: $font-size-xs;
-            }
+     
         }
         
         // Base dot styles

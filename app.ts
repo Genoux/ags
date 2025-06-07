@@ -1,18 +1,14 @@
 import { App } from "astal/gtk3"
 import style from "./styles/main.scss"
 import Bar from "./widget/Bar"
-import NotificationCenter from "./widget/notifications/NotificationCenter"
-import NotificationPopups from "./widget/notifications/components/NotificationPopup"
+import NotificationPopup from "./widget/notifications/NotificationPopup"
 
 App.start({
     css: style,
     main() {
         App.get_monitors().map(monitor => {
             Bar(monitor)
-            NotificationCenter(monitor)
+            NotificationPopup(monitor)
         })
-        
-        // Notification popups (only need one instance)
-        NotificationPopups()
     },
 })

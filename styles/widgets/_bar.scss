@@ -34,7 +34,6 @@ window.Bar {
 // Left Section - Control panel and workspaces
 .bar-left {
   .control-panel {
-    margin-right: $spacing-sm;
     
     button {
       @include button-base;
@@ -67,8 +66,7 @@ window.Bar {
 // Right Section - Consistent spacing and subtle backgrounds
 .bar-right {
   padding: $spacing-sm;
-  
-  // Add horizontal spacing between items
+
   > *:not(:last-child) {
     @include button-base;
     padding: $spacing-sm $spacing-md;

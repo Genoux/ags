@@ -1,3 +1,1 @@
-import SystemControl from "./SystemControl" 
-
-export default SystemControl
+export  { default as SystemControl } from "./SystemControl" 

@@ -4,7 +4,7 @@ import { audioControls } from "../audiocontrols";
 import { bind } from "astal";
 import { createWindowManager } from "../WindowHelper";
 import { NotificationCenterWidget } from "../notifications"
-import SystemControl from "../systemcontrol"
+import { SystemControl } from "../systemcontrol"
 
 const controlPanel = createWindowManager({
   name: "control-panel",

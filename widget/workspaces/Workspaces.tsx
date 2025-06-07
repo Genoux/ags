@@ -71,13 +71,14 @@ export default function Workspaces() {
                                 if (!isOccupied) {
                                     // Empty workspace - show number
                                     return (
-                                        <box 
-                                            className="workspace-number" 
-                                            heightRequest={12} 
-                                            widthRequest={12}
-                                        >
-                                            {ws.id.toString()}
-                                        </box>
+                                        <label
+                                        className="workspace-number"
+                                        label={ws.id.toString()}
+                                        halign={Gtk.Align.CENTER}
+                                        valign={Gtk.Align.CENTER}
+                                        heightRequest={12}
+                                        widthRequest={12}
+                                    />
                                     )
                                 } else {
                                     // Occupied workspace - show dot
