@@ -1,5 +1,5 @@
 import { bind } from "astal"
-import { hypr, updateTrigger } from "../Widget"
+import { hypr, updateTrigger } from "../Service"
 
 // UI Component - 100% Pure UI
 export default function WindowTitle() {

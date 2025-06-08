@@ -2,13 +2,13 @@ import { Astal, Gtk } from "astal/gtk3";
 import Mpris from "gi://AstalMpris";
 import { bind, Variable } from "astal";
 
-// Import business logic from Controller
+// Import business logic from Service
 import {
   trackPlayerInteraction,
   setupPlaybackMonitoring,
   getMostRecentPlayer,
   globalUpdateTrigger,
-} from "./Controller";
+} from "../Service";
 
 // Utility Functions
 function lengthStr(length: number) {
@@ -228,70 +228,54 @@ export function MediaControls({
   );
 }
 
-// MediaPlayer component (built from pure UI functions)
-function MediaPlayer({ player }: { player: Mpris.Player }) {
-  const coverArtBackground = bind(player, "coverArt").as((c) => 
-    c ? `background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.7)), url('${c}'); background-size: cover; background-position: center;` : ""
-  );
-
-  return (
-    <box 
-      className="MediaPlayer" 
-      heightRequest={100} 
-      spacing={6}
-      css={coverArtBackground} 
-    >
-      <box className="media-content" vertical hexpand spacing={6}>
-        <TrackInfo player={player} />
-        <ProgressWithTime
-          player={player}
-          trackPlayerInteraction={trackPlayerInteraction}
-        />
-        <MediaControls
-          player={player}
-          trackPlayerInteraction={trackPlayerInteraction}
-        />
-      </box>
-    </box>
-  );
-}
-
-// Single Source Media Player with Most Recent Active Pattern
-export default function MediaPlayerComponent() {
+// MediaPlayer component that can be used in JSX
+export default function MediaPlayer() {
   const mpris = Mpris.get_default();
 
-  // Use the global update trigger from interactions
-  function triggerUpdate() {
-    globalUpdateTrigger.set(globalUpdateTrigger.get() + 1);
-    console.log("[MediaPlayer] UI update triggered by player list change");
-  }
-
-  // Set up monitoring for player list changes (add/remove players)
+  // Set up monitoring for player list changes
   mpris.connect("notify::players", () => {
-    triggerUpdate();
-    // Set up playback monitoring for new players
+    globalUpdateTrigger.set(globalUpdateTrigger.get() + 1);
     setupPlaybackMonitoring(mpris.players);
   });
 
   // Initial setup
   setupPlaybackMonitoring(mpris.players);
 
-  return bind(globalUpdateTrigger).as(() => {
-    const players = mpris.players;
+  return (
+    <box vertical className="MediaPlayerContainer">
+      {bind(globalUpdateTrigger).as(() => {
+        const players = mpris.players;
+        const activePlayer = getMostRecentPlayer(players);
 
-    if (players.length === 0) {
-      return null;
-    }
+        if (players.length === 0 || !activePlayer) {
+          return null; // Return null when no player
+        }
 
-    const activePlayer = getMostRecentPlayer(players);
-    if (!activePlayer) {
-      return null;
-    }
+        const coverArtBackground = bind(activePlayer, "coverArt").as((c) => 
+          c ? `background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.7)), url('${c}'); background-size: cover; background-position: center;` : ""
+        );
 
-    return (
-      <box vertical className="MediaPlayerContainer">
-        <MediaPlayer player={activePlayer} />
-      </box>
-    );
-  }) as unknown as Gtk.Widget;
+        return (
+          <box 
+            className="MediaPlayer" 
+            heightRequest={100} 
+            spacing={6}
+            css={coverArtBackground} 
+          >
+            <box className="media-content" vertical hexpand spacing={6}>
+              <TrackInfo player={activePlayer} />
+              <ProgressWithTime
+                player={activePlayer}
+                trackPlayerInteraction={trackPlayerInteraction}
+              />
+              <MediaControls
+                player={activePlayer}
+                trackPlayerInteraction={trackPlayerInteraction}
+              />
+            </box>
+          </box>
+        );
+      })}
+    </box>
+  );
 }

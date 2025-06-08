@@ -11,7 +11,8 @@ window {
 
 box.AudioPanel {
     font-family: $font-family-primary;
-
+    padding: $spacing-md;
+    
     button {
         @include button-base;
         min-width: $spacing-xs;

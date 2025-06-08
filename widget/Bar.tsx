@@ -5,7 +5,7 @@ import Tray from "gi://AstalTray";
 import Workspaces from "./workspaces";
 import WindowTitle from "./windowtitle";
 import KeyboardSwitcher from "./keyboardswitcher";
-import AudioButton from "./audiocontrols";
+import { AudioButton } from "./audiocontrols";
 import TimeDisplay from "./timedisplay";
 import ControlPanelButton from "./controlpanel";
 import { NotificationButton } from "./notifications";
@@ -13,7 +13,7 @@ import SystemTray from "./systemtray";
 
 function LeftSection() {
   return (
-    <box className="bar-section bar-left" halign={Gtk.Align.START} spacing={6}>
+    <box className="bar-section bar-left" halign={Gtk.Align.START} spacing={4}>
       <box className="bar-item control-panel">
         <ControlPanelButton />
       </box>

@@ -1,5 +1,5 @@
 import { bind } from "astal"
-import { keyboardLang, switchKeyboardLayout } from "../Widget"
+import { keyboardLang, switchKeyboardLayout } from "../Service"
 
 // UI Component - 100% Pure UI
 export default function KeyboardSwitcher() {

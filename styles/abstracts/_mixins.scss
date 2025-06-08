@@ -30,10 +30,11 @@
 
 // Section container mixin - Used multiple times in control panel
 @mixin section-container {
-  background-color: $bg-tertiary;
-  border-radius: $radius-md;
-  padding: $spacing-md;
-  margin: 0;
+  > box {
+    background-color: $bg-secondary;
+    border-radius: $radius-md;
+    border: none;
+  }
 }
 
 // Badge mixin - for notification badges and similar elements

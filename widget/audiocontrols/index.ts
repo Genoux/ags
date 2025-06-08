@@ -1,6 +1,5 @@
-// AudioControls Widget - Complex Pattern (multiple components)
-import { audioControls } from "./Widget"
 import AudioButton from "./components/AudioButton"
+import AudioControls from "./components/AudioControls"
 
-export { audioControls }
-export default AudioButton
+export { AudioButton }
+export default AudioControls

@@ -1,11 +1,9 @@
-import { bind, Variable } from "astal"
-import { App, Gtk } from "astal/gtk3"
+import { bind } from "astal"
+import { Gtk } from "astal/gtk3"
 import Notifd from "gi://AstalNotifd"
-import NotificationCenter from "./NotificationCenter"
-import { getCountableNotificationCount } from "./utils"
+import { getCountableNotificationCount, notificationCenter } from "../Service"
 
 const notifications = Notifd.get_default()
-let notificationCenter: any = null
 
 export default function NotificationButton() {
   return (
@@ -15,12 +13,7 @@ export default function NotificationButton() {
         return `NotificationButton${count > 0 ? " has-notifications" : ""}`
       })}
       tooltip_text="Notifications"
-      onClicked={() => {
-        if (!notificationCenter) {
-          notificationCenter = NotificationCenter()
-        }
-        notificationCenter.toggle()
-      }}
+      onClicked={notificationCenter.toggle}
     >
       <box spacing={4}>
         <icon

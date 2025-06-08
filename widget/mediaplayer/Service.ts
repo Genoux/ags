@@ -1,8 +1,6 @@
 import { Widget, Astal, Gtk } from "astal/gtk3"
 import { Variable, bind } from "astal"
-import { createWindowManager } from "../utils"
 import Mpris from "gi://AstalMpris"
-import MediaPlayerComponent from "./components/MediaPlayer"
 
 // Global state management
 export const playerInteractions = new Map<string, number>()
@@ -64,39 +62,6 @@ export function getMostRecentPlayer(players: Mpris.Player[]): Mpris.Player | nul
     return mostRecentPlayer
 }
 
-// Custom click handler for MPRIS integration
-function handleMediaPlayerClick() {
-    const mpris = Mpris.get_default()
-    const players = mpris.players
-    
-    if (players.length > 0) {
-        // Find the currently displayed player (most recent interaction)
-        const activePlayer = getMostRecentPlayer(players)
-        
-        if (activePlayer && activePlayer.can_raise) {
-            activePlayer.raise()
-            trackPlayerInteraction(activePlayer) // Track this as an interaction
-            
-            console.log(`[MediaPlayer] Window clicked - raising ${activePlayer.identity || activePlayer.busName}`)
-        }
-    }
-    
-    // Close window after opening media app
-    mediaPlayer.toggle()
-}
-
-// Create window manager with MPRIS integration
-const mediaPlayer = createWindowManager({
-    name: "media-player",
-    className: "media-player-window",
-    content: MediaPlayerComponent(),
-    onWindowClick: handleMediaPlayerClick
-})
-
 // Create a variable that tracks if there are any players available
-export const hasMediaPlayers = bind(globalUpdateTrigger).as(() => {
-    const mpris = Mpris.get_default()
-    return mpris.players.length > 0
-})
-
-export { mediaPlayer }
+const mpris = Mpris.get_default()
+export const hasMediaPlayers = bind(mpris, "players").as(players => players.length > 0)

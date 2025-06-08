@@ -1,15 +1,13 @@
 import { bind } from "astal"
-import { controlPanel } from "../Widget"
+import { controlPanelVisible, toggleControlPanel } from "../Service"
 
 export default function ControlPanelButton() {
   return (
     <button
-      className={bind(controlPanel.isVisible).as((visible) =>
+      className={bind(controlPanelVisible).as((visible) =>
         visible ? "active" : ""
       )}
-      onClicked={() => {
-        controlPanel.toggle()
-      }}
+      onClicked={toggleControlPanel}
     >
       <icon icon="view-grid-symbolic" />
     </button>

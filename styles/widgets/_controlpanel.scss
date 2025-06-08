@@ -17,15 +17,7 @@ box.ControlPanel {
     padding: $spacing-md;
     margin: $spacing-md;
     
-    box.notification-center-container {
-        @include section-container;
-        border: none;
-        padding: 0;
-    }
-    box.notification-section {
-        border: none;
-    }
-    box.audio-section {
+    box.widget {
         @include section-container;
     }
 } 

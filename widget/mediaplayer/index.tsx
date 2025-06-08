@@ -1,3 +1,5 @@
-// MediaPlayer Widget - Complex Pattern (multiple components)
-import { mediaPlayer, hasMediaPlayers } from "./Widget"
-export { mediaPlayer, hasMediaPlayers }
+// MediaPlayer Widget - Component Pattern
+import { hasMediaPlayers } from "./Service"
+import MediaPlayer from "./components/MediaPlayer"
+
+export { MediaPlayer, hasMediaPlayers }

@@ -19,22 +19,22 @@
 // Notification Center Styles
 // =============================================================================
 
-window.NotificationCenter {
+window.notification-center-window {
   @include window-base;
 }
 
-.notification-center-container {
-  background-color: $bg-primary;
+.notification-center {
+  background-color: $bg-secondary;
   min-height: 300px;
   min-width: 300px;
-  border-left: $border-width solid $border-primary;
-  border-bottom-left-radius: $radius-lg;
+  border: 1px solid $border-primary;
+  border-radius: $radius-sm;
 
-  .header {
+  .notification-header {
     padding: $spacing-xl $spacing-lg;
     border-bottom: $border-width solid $border-primary;
 
-    .title {
+    .notification-title {
       font-size: $font-size-lg;
       color: $text-primary;
     }
@@ -55,17 +55,11 @@ window.NotificationCenter {
   .notification-list {
     background: transparent;
     border: none;
-    padding: $spacing-md;
 
-    .empty-state {
+    .no-notifications {
       color: $theme-white;
 
-      icon {
-        font-size: 1.5em;
-        opacity: 0.5;
-      }
-
-      label {
+      .no-notifications-text {
         font-size: $font-size-lg;
         opacity: 0.3;
       }
@@ -111,6 +105,14 @@ eventbox.notification {
     transition: all $transition-fast;
     min-width: 300px;
     font-family: $font-family-primary;
+  }
+
+  &:first-child > box {
+    margin-top: $spacing-sm;
+  }
+
+  &:last-child > box {
+    margin-bottom: $spacing-lg;
   }
 
   &:hover > box {

@@ -1,6 +1,6 @@
 import { bind } from "astal"
-import { mediaPlayer, hasMediaPlayers } from "../../mediaplayer"
-import { audioControls } from "../../audiocontrols"
+import { MediaPlayer, hasMediaPlayers } from "../../mediaplayer"
+import AudioControls from "../../audiocontrols"
 import { NotificationCenterWidget } from "../../notifications"
 import { SystemControl } from "../../systemcontrol"
 
@@ -10,12 +10,14 @@ export default function ControlPanel() {
       <box className="notification-section">
         <NotificationCenterWidget />
       </box>
-      <box className="system-control-section">
+      <box className="widget">
         <SystemControl />
       </box>
-      <box className="audio-section">{audioControls.content}</box>
-      <box className="media-section" visible={bind(hasMediaPlayers).as((visible) => visible)}>
-        {mediaPlayer.content}
+      <box className="widget">
+        <AudioControls />
+      </box>
+      <box className="widget" visible={bind(hasMediaPlayers).as((visible) => visible)}>
+        <MediaPlayer />
       </box>
     </box>
   )

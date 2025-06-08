@@ -1,4 +1,5 @@
-import { getItemName, focusWindow } from "../Widget"
+import { getItemName, focusWindow } from "../Service"
+import { GLib } from "astal"
 
 // UI Component - Individual Tray Item
 export default function SysTrayItem({ item }: { item: any }) {
@@ -10,15 +11,7 @@ export default function SysTrayItem({ item }: { item: any }) {
       className="systray-item"
       tooltip_markup={tooltipText}
       onClicked={async () => {
-        // Try to focus existing window first
-        const focused = await focusWindow(appName)
-        if (!focused) {
-          try {
-            item.activate(0, 0)
-          } catch (error) {
-            console.error("Error activating tray item:", error)
-          }
-        }
+       await focusWindow(appName)
       }}
     >
       <icon 

@@ -1,6 +1,6 @@
 import { Gtk } from "astal/gtk3"
 import { bind } from "astal"
-import { workspaceClients, hypr } from "../Widget"
+import { workspaceClients, hypr } from "../Service"
 
 // UI Component - 100% Pure UI
 export default function Workspaces() {
@@ -19,14 +19,11 @@ export default function Workspaces() {
                         <button
                             className={bind(hypr, "focusedWorkspace").as(focused => {
                                 const isFocused = focused?.id === ws.id
-                                const isActive = isOccupied && !isFocused
-                                
-                                return [
-                                    "workspace",
-                                    isFocused && "focused",
-                                    isOccupied && "occupied", 
-                                    isActive && "active"
-                                ].filter(Boolean).join(" ")
+                                let classes = ["workspace"]
+                                if (isFocused) classes.push("focused")
+                                if (isOccupied) classes.push("occupied")
+                                if (isOccupied && !isFocused) classes.push("active")
+                                return classes.join(" ")
                             })}
                             onClicked={() => ws.focus()}
                             tooltip_text={`Workspace ${ws.id}${isOccupied ? ` (${clientCount} windows)` : ""}`}
@@ -34,26 +31,24 @@ export default function Workspaces() {
                             {bind(hypr, "focusedWorkspace").as(focused => {
                                 const isFocused = focused?.id === ws.id
                                 
-                                if (!isOccupied) {
-                                    // Empty workspace - show number
-                                    return (
-                                        <label
-                                        className="workspace-number"
-                                        label={ws.id.toString()}
-                                        halign={Gtk.Align.CENTER}
-                                        valign={Gtk.Align.CENTER}
-                                        heightRequest={12}
-                                        widthRequest={12}
-                                    />
-                                    )
-                                } else {
-                                    // Occupied workspace - show dot
+                                if (isOccupied) {
                                     const dotClass = isFocused ? "focused-dot" : "occupied-dot"
                                     return (
                                         <box 
                                             className={`workspace-dot ${dotClass}`} 
                                             widthRequest={9} 
                                             heightRequest={9}
+                                        />
+                                    )
+                                } else {
+                                    return (
+                                        <label
+                                            className="workspace-number"
+                                            label={ws.id.toString()}
+                                            halign={Gtk.Align.CENTER}
+                                            valign={Gtk.Align.CENTER}
+                                            heightRequest={12}
+                                            widthRequest={12}
                                         />
                                     )
                                 }

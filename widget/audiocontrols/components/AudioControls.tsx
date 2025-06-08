@@ -1,6 +1,7 @@
 import { Astal, Gtk } from "astal/gtk3"
 import Wp from "gi://AstalWp"
 import { bind, Variable } from "astal"
+import AudioButton from "./AudioButton"
 
 // Utility Functions
 function volumeIcon(volume: number, muted: boolean) {
@@ -48,13 +49,7 @@ export default function AudioControlsComponent(): Gtk.Widget {
     })
     
     return <box className="AudioPanel" spacing={8}>
-        <button
-            onClicked={() => {
-                speaker.mute = !speaker.mute
-            }}
-        >
-            <icon icon={bind(iconName)} />
-        </button>
+        <AudioButton />
         <slider
             hexpand
             value={bind(sliderValue)}

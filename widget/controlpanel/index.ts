@@ -1,6 +1,4 @@
-// ControlPanel Widget - Complex Pattern (multiple components)
+// ControlPanel Widget - Component Pattern
 import ControlPanelButton from "./components/ControlPanelButton"
-import { controlPanel } from "./Widget"
 
-export { controlPanel }
 export default ControlPanelButton

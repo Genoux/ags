@@ -7,3 +7,15 @@
 @use 'widgets/controlpanel';
 @use 'widgets/systemcontrol';
 @use 'widgets/systemtray';
+
+box  {
+    all: unset;
+    padding: 0;
+    margin: 0;
+    border: none;
+    background-color: transparent;
+    color: inherit;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+}

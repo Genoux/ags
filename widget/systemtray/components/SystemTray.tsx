@@ -1,5 +1,5 @@
 import { bind } from "astal"
-import { SystemTray, shouldIgnoreTrayItem } from "../Widget"
+import { SystemTray, shouldIgnoreTrayItem } from "../Service"
 import SysTrayItem from "./SysTrayItem"
 
 // UI Component - 100% Pure UI

@@ -6,7 +6,8 @@ export const SystemTray = Tray.get_default()
 
 // Apps to ignore in system tray
 export const IGNORED_TRAY_APPS = [
-  "clickup"
+  "clickup",
+  "unknown"
 ]
 
 /**
@@ -60,6 +61,8 @@ export async function focusWindow(appName: string): Promise<boolean> {
         GLib.spawn_command_line_async(`hyprctl dispatch focuswindow address:${client.address}`)
         return true
       }
+
+      GLib.spawn_command_line_async(`hyprctl dispatch exec ${appName}`)
     }
     return false
   } catch (error) {
