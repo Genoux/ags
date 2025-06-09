@@ -33,26 +33,6 @@ window.Bar {
 
 // Left Section - Control panel and workspaces
 .bar-left {
-  .control-panel {
-    
-    button {
-      @include button-base;
-      
-      &:hover {
-        background: $bg-hover;
-      }
-      
-      &:active,
-      &.active {
-        background: $bg-hover;
-        
-        &:hover {
-          background: $bg-hover;
-        }
-      }
-    }
-  }
-  
   .workspaces {
     padding: $spacing-xs;
   }

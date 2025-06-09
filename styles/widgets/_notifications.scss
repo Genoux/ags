@@ -28,7 +28,7 @@ window.notification-center-window {
   min-height: 300px;
   min-width: 300px;
   border: 1px solid $border-primary;
-  border-radius: $radius-sm;
+  border-bottom-left-radius: $radius-lg;
 
   .notification-header {
     padding: $spacing-xl $spacing-lg;

@@ -1,3 +1,3 @@
 // Shared utilities
 export * from "./shared"
-export { createSimpleWindow } from "./WindowHelper" 
+export { createWindow, createSimpleWindow } from "./WindowHelper" 

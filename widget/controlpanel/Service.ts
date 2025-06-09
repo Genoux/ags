@@ -1,9 +1,9 @@
 import { Astal } from "astal/gtk3"
-import { createSimpleWindow } from "../utils"
+import { createWindow } from "../utils"
 import ControlPanel from "./components/ControlPanel"
 
-// Create simple popup window
-export const controlPanel = createSimpleWindow({
+// Create popup window with auto-close behavior
+export const controlPanel = createWindow({
   name: "control-panel",
   className: "control-panel-window",
   content: ControlPanel(),

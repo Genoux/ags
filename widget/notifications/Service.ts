@@ -1,6 +1,6 @@
 import { Astal } from "astal/gtk3"
-import { createSimpleWindow } from "../utils"
-import { NotificationCenterWidget } from "./components/NotificationCenter"
+import { createWindow } from "../utils"
+import NotificationCenter, { NotificationCenterWidget } from "./components/NotificationCenter"
 import { dismissAllPopups } from "./components/NotificationPopup"
 
 // Apps to ignore from count and notification center (but still show in popup)
@@ -56,10 +56,10 @@ export function getCountableNotificationCount(notifications: any[]): number {
 }
 
 // Notification Center Window
-export const notificationCenter = createSimpleWindow({
+export const notificationCenter = createWindow({
     name: "notification-center",
     className: "notification-center-window",
-    content: NotificationCenterWidget(),
+    content: NotificationCenter({ showCloseButton: true }),
     anchor: Astal.WindowAnchor.TOP | Astal.WindowAnchor.RIGHT | Astal.WindowAnchor.BOTTOM,
 })
 

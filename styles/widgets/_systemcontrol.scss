@@ -14,7 +14,7 @@
         @include button-base;
         color: $text-secondary;
         background-color: transparent;
-        min-height: 50px;
+        min-height: 24px;
         
         &:hover {
             color: $text-primary;

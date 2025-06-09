@@ -55,16 +55,7 @@
 
 
 // Global mixin class
-
 .separator {
   background-color: $border-primary;
   min-height: 1px;
-}
-
-.tooltip {
-  background-color: $bg-primary;
-  color: $text-primary;
-  font-size: $font-size-sm;
-  padding: $spacing-sm $spacing-md;
-  border-radius: $radius-sm;
 }

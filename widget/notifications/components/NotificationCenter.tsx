@@ -3,8 +3,13 @@ import { Gtk } from "astal/gtk3";
 import Notifd from "gi://AstalNotifd";
 import Notification from "./Notification";
 import { filterVisibleNotifications } from "../Service";
+import { notificationCenter } from "../Service";
 
-export default function NotificationCenter() {
+interface NotificationCenterProps {
+  showCloseButton?: boolean;
+}
+
+export default function NotificationCenter({ showCloseButton = true }: NotificationCenterProps) {
   const notifd = Notifd.get_default();
 
   return (
@@ -15,24 +20,41 @@ export default function NotificationCenter() {
           className="notification-title"
           halign={Gtk.Align.START}
         />
+        <box>
+        <box halign={Gtk.Align.END} hexpand>  
         <button
-          className="clear-all-btn"
-          halign={Gtk.Align.END}
-          hexpand
-          onClicked={() => {
-            // Clear all notifications
-            const notifications = notifd.notifications;
-            notifications.forEach((notif) => {
-              try {
-                notif.dismiss();
-              } catch (error) {
-                console.error("Failed to dismiss notification:", error);
-              }
-            });
-          }}
-        >
-          <label label="Clear All" />
-        </button>
+            className="clear-all-btn"
+            onClicked={() => {
+              // Clear all notifications
+              const notifications = notifd.notifications;
+              notifications.forEach((notif) => {
+                try {
+                  notif.dismiss();
+                } catch (error) {
+                  console.error("Failed to dismiss notification:", error);
+                }
+              });
+            }}
+          >
+            <label label="Clear All" />
+          </button>
+          {showCloseButton && (
+            <button
+              hexpand
+              className="close-btn"
+              halign={Gtk.Align.END}
+              onClicked={() => {
+                if (notificationCenter.isVisible.get()) {
+                  notificationCenter.window.visible = false
+                  notificationCenter.isVisible.set(false)
+                }
+              }}
+            >
+              <label label="×" />
+            </button>
+          )}
+        </box>
+        </box>
       </box>
 
       <scrollable
@@ -78,5 +100,5 @@ export default function NotificationCenter() {
 
 // Export a widget version for use in other components
 export function NotificationCenterWidget() {
-  return <NotificationCenter />;
+  return <NotificationCenter showCloseButton={false} />;
 }

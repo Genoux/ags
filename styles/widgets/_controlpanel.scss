@@ -21,3 +21,9 @@ box.ControlPanel {
         @include section-container;
     }
 } 
+
+.control-panel-button {
+    &.active {
+        background: $bg-active;
+    }
+}
