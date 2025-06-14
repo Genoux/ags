@@ -36,11 +36,12 @@ export function ConfirmationOverlay() {
     <box
       className="inline-confirmation-overlay"
       visible={confirmationVisible()}
-      valign={Gtk.Align.CENTER}
+      valign={Gtk.Align.FILL}
       halign={Gtk.Align.FILL}
       hexpand
+      vexpand
     >
-      <box vertical vexpand spacing={4} halign={Gtk.Align.CENTER}>
+      <box vertical vexpand hexpand spacing={4} halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER}>
         <box
           className="confirmation-header"
           vertical
@@ -57,9 +58,9 @@ export function ConfirmationOverlay() {
 
         <box
           className="confirmation-buttons"
-          spacing={10}
           hexpand
           halign={Gtk.Align.CENTER}
+          spacing={8}
         >
           <button
             className="confirmation-btn cancel-btn"

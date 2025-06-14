@@ -26,9 +26,13 @@ window.notification-center-window {
 .notification-center {
   background-color: $bg-secondary;
   min-height: 300px;
-  min-width: 300px;
-  border: 1px solid $border-primary;
-  border-bottom-left-radius: $radius-lg;
+  min-width: 320px;
+  border: 1px solid $border-tertiary;
+  border-radius: $radius-lg;
+
+  &.floating {
+    margin: $spacing-sm;
+  }
 
   .notification-header {
     padding: $spacing-xl $spacing-lg;
@@ -55,6 +59,10 @@ window.notification-center-window {
   .notification-list {
     background: transparent;
     border: none;
+
+    .notification-list-content {
+      margin: 0 6px 6px 6px;
+    }
 
     .no-notifications {
       color: $theme-white;
@@ -94,6 +102,71 @@ window.NotificationPopups {
   @include window-base;
 }
 
+// =============================================================================
+// Notification Group Styles  
+// =============================================================================
+
+eventbox.notification-group-header {
+  all: unset;
+
+  > box {
+    border: 1px solid $border-tertiary;
+    background-color: $bg-tertiary;
+    border-radius: $radius-md;
+    transition: all $transition-fast;
+    min-width: 300px;
+    font-family: $font-family-primary;
+    padding: $spacing-md;
+  }
+
+  &:hover > box {
+    background-color: $bg-quaternary;
+  }
+
+  .notification-group-header-content {
+    .app-icon {
+      min-width: 16px;
+      min-height: 16px;
+      color: $theme-white;
+    }
+
+    .app-name {
+      font-weight: 500;
+      color: $text-primary;
+      font-size: $font-size-sm;
+    }
+
+    .timestamp {
+      font-size: $font-size-xs;
+      color: $text-secondary;
+    }
+
+    .close-btn {
+      @include button-base;
+    }
+
+    .action-buttons {
+      .close-btn {
+        @include button-base;
+        
+        &:hover {
+          background-color: rgba($theme-white, 0.1);
+        }
+      }
+    }
+  }
+}
+
+.notification-group-expanded {
+  .grouped-notification-wrapper {
+    // Individual notifications in groups maintain their styling
+    // No additional margin/padding needed
+  }
+}
+
+// =============================================================================
+// Individual Notification Styles
+// =============================================================================
 
 eventbox.notification {
   all: unset;
@@ -105,14 +178,6 @@ eventbox.notification {
     transition: all $transition-fast;
     min-width: 300px;
     font-family: $font-family-primary;
-  }
-
-  &:first-child > box {
-    margin-top: $spacing-sm;
-  }
-
-  &:last-child > box {
-    margin-bottom: $spacing-lg;
   }
 
   &:hover > box {

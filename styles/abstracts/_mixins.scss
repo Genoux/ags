@@ -32,8 +32,9 @@
 @mixin section-container {
   > box {
     background-color: $bg-secondary;
-    border-radius: $radius-md;
-    border: none;
+    border-radius: $radius-lg;
+    border: 1px solid $border-tertiary;
+    margin: 0;
   }
 }
 

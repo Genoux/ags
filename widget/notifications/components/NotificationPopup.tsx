@@ -1,5 +1,5 @@
-import { bind, Variable, timeout } from "astal"
-import { Astal, Gdk, Gtk, App } from "astal/gtk3"
+import { bind, Variable } from "astal"
+import { Astal, Gdk, App } from "astal/gtk3"
 import Notifd from "gi://AstalNotifd"
 import Notification from "./Notification"
 import { filterPopupNotifications } from "../Service"
@@ -73,6 +73,13 @@ const visiblePopupNotifications = Variable.derive([
     bind(notifications, "notifications"),
     dismissedPopups
 ], (notifs, dismissed) => {
+    // Debug: Log all incoming notifications
+    notifs.forEach(notif => {
+        if (notif.time > agsStartTime - 60) { // Log recent notifications
+            console.log(`📢 Notification received - App: "${notif.app_name}", Summary: "${notif.summary}", Body: "${notif.body}"`)
+        }
+    })
+    
     const visible = filterPopupNotifications(notifs) // Filter out completely ignored apps
         .filter(notif => notif.time > agsStartTime) // Only show notifications that arrived after AGS started
         .filter(notif => !dismissed.includes(notif.id)) // Hide dismissed popups
@@ -93,6 +100,7 @@ const visiblePopupNotifications = Variable.derive([
 export default function NotificationPopup(gdkmonitor: Gdk.Monitor) {
     return (
         <window
+            name="NotificationPopup"
             className="NotificationPopup"
             gdkmonitor={gdkmonitor}
             anchor={Astal.WindowAnchor.BOTTOM | Astal.WindowAnchor.RIGHT}

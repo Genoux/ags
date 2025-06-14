@@ -3,6 +3,25 @@ import { createWindow } from "../utils"
 import NotificationCenter, { NotificationCenterWidget } from "./components/NotificationCenter"
 import { dismissAllPopups } from "./components/NotificationPopup"
 
+// Configuration Constants
+export const NOTIFICATION_GROUP_THRESHOLD = 2; // Group notifications when more than this number from same app
+
+// Global state to track expanded notification groups
+const expandedGroups = new Set<string>();
+
+// Helper functions to manage expanded group state
+export function isGroupExpanded(appName: string): boolean {
+    return expandedGroups.has(appName);
+}
+
+export function setGroupExpanded(appName: string, expanded: boolean): void {
+    if (expanded) {
+        expandedGroups.add(appName);
+    } else {
+        expandedGroups.delete(appName);
+    }
+}
+
 // Apps to ignore from count and notification center (but still show in popup)
 const IGNORED_FROM_COUNT_AND_CENTER_APPS: string[] = [
     "spotify", // Note: using lowercase for case-insensitive matching
@@ -53,6 +72,54 @@ export function filterPopupNotifications(notifications: any[]): any[] {
 // Helper function to get count (excludes count+center ignored and completely ignored)
 export function getCountableNotificationCount(notifications: any[]): number {
     return filterVisibleNotifications(notifications).length
+}
+
+// Helper function to group notifications by app
+export function groupNotificationsByApp(notifications: any[]): { [key: string]: any[] } {
+    const groups: { [key: string]: any[] } = {};
+    
+    notifications.forEach(notification => {
+        const appName = notification.app_name || "Unknown App";
+        if (!groups[appName]) {
+            groups[appName] = [];
+        }
+        groups[appName].push(notification);
+    });
+    
+    // Sort notifications within each group by time (newest first)
+    Object.keys(groups).forEach(appName => {
+        groups[appName].sort((a, b) => b.time - a.time);
+    });
+    
+    return groups;
+}
+
+// Helper function to determine if notifications should be grouped
+export function shouldGroupNotifications(notifications: any[], threshold: number = 3): boolean {
+    return notifications.length > threshold;
+}
+
+// Helper function to get grouped and ungrouped notifications for rendering
+export function processNotificationsForGrouping(notifications: any[], groupThreshold: number = 3): {
+    groupedApps: { [key: string]: any[] };
+    ungroupedNotifications: any[];
+} {
+    const groups = groupNotificationsByApp(notifications);
+    const groupedApps: { [key: string]: any[] } = {};
+    const ungroupedNotifications: any[] = [];
+    
+    Object.entries(groups).forEach(([appName, appNotifications]) => {
+        if (shouldGroupNotifications(appNotifications, groupThreshold)) {
+            groupedApps[appName] = appNotifications;
+        } else {
+            ungroupedNotifications.push(...appNotifications);
+        }
+    });
+    
+    // Sort ungrouped notifications by time (newest first)
+    ungroupedNotifications.sort((a, b) => b.time - a.time);
+    
+    return { groupedApps, ungroupedNotifications };
 }
 
 // Notification Center Window

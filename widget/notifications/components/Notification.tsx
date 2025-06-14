@@ -1,28 +1,6 @@
-import { GLib, bind } from "astal";
+import { GLib } from "astal";
 import { Gtk } from "astal/gtk3";
 import { dismissPopupNotification } from "./NotificationPopup";
-
-function getAppIcon(notification: any): string {
-  const iconTheme = Gtk.IconTheme.get_default()
-  
-  // List of potential icon names to try
-  const iconCandidates = [
-    notification.app_icon,
-    notification.app_name?.toLowerCase().replace(/\s+/g, '-'),
-  ].filter(Boolean)
-  
-  // Try each icon candidate
-  for (const iconName of iconCandidates) {
-    if (iconName && iconTheme.has_icon(iconName)) {
-      return iconName
-    }
-  }
-  
-  // Fallback to generic application icon
-  return iconTheme.has_icon('application-x-executable') 
-    ? 'bell-symbolic' 
-    : 'dialog-information'
-}
 
 // Simple notification component following original NotificationItem structure
 export default function Notification({
@@ -32,13 +10,8 @@ export default function Notification({
   notification: any;
   isInCenter?: boolean;
 }) {
-  const time =
-    GLib.DateTime.new_from_unix_local(notification.time).format("%H:%M") || "";
+  const time = GLib.DateTime.new_from_unix_local(notification.time).format("%H:%M") || "";
 
-  // Get app icon with fallback using getAppIcon
-  const appIcon = getAppIcon(notification);
-
-  // Get actions
   const actions = notification.get_actions?.() || [];
 
   return (
@@ -46,8 +19,6 @@ export default function Notification({
       className="notification"
       onButtonPressEvent={(_, event) => {
         if ((event as any).button === 1) {
-          // Left click
-          // Find and invoke default action
           const defaultAction = actions.find(
             (action: any) =>
               action.id === "default" ||
@@ -64,7 +35,7 @@ export default function Notification({
       <box className="notification-container" vertical>
         {/* Notification Header */}
         <box className="notification-header" spacing={4}>
-          <icon className="app-icon" icon={appIcon} />
+          <icon className="app-icon" icon={notification.app_icon} />
 
           <label
             className="app-name"

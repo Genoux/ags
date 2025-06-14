@@ -38,7 +38,7 @@ $theme-white: rgba(255, 255, 255, 1);      // White reference
 // =============================================================================
 
 // Background colors - dark mode appropriate hierarchy with more transparency
-$bg-primary: theme-alpha($theme-base, 0.55);           // Main background (lightest layer)
+$bg-primary: theme-alpha($theme-base, 0.4);           // Main background (lightest layer)
 $bg-secondary: theme-alpha(theme-darken(3%), 0.55);    // Secondary surfaces (slightly darker)
 $bg-tertiary: theme-alpha(theme-darken(6%), 0.50);     // Tertiary surfaces (darker still)
 $bg-quaternary: theme-alpha(theme-darken(10%), 0.45);  // Modal/overlay backgrounds (darkest for depth)

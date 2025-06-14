@@ -11,8 +11,9 @@
   // Tray items container
   .systray-item {
     @include button-base;
-    border-radius: $radius-xs;
+    border-radius: $radius-md;
     transition: background $transition-fast;
+    padding: 0 $spacing-sm;
     
     &:hover {
       background: $bg-hover;

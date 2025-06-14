@@ -1,4 +1,4 @@
-import { Widget, Astal } from "astal/gtk3"
+import { Widget, Astal, Gdk } from "astal/gtk3"
 import { Variable } from "astal"
 
 interface WindowConfig {
@@ -18,7 +18,7 @@ export function createWindow(config: WindowConfig) {
         visible: false,
     })
     
-    window.child = config.content
+    window.add(config.content)
     
     return {
         window,
@@ -31,5 +31,3 @@ export function createWindow(config: WindowConfig) {
         }
     }
 }
-
-export const createSimpleWindow = createWindow 

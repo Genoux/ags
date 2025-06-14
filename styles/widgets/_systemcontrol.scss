@@ -7,14 +7,12 @@
 
 .system-control-container {
     padding: $spacing-md;
-    background-color: $bg-tertiary;
-    border-radius: $radius-md;
     
     .system-control-btn {
         @include button-base;
         color: $text-secondary;
         background-color: transparent;
-        min-height: 24px;
+        min-height: 40px;
         
         &:hover {
             color: $text-primary;
@@ -53,20 +51,15 @@
 // =============================================================================
 
 .inline-confirmation-overlay {
-    
     .confirmation-header {
-        
         .confirmation-title {
-            font-size: $font-size-md;
-            font-weight: 600;
+            font-size: $font-size-sm;
+            font-weight: 500;
             color: $text-primary;
         }
-        
     }
     
     .confirmation-buttons {
-   
-            @include button-base;
             font-size: $font-size-sm;
             font-weight: 500;
             

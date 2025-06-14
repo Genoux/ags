@@ -6,7 +6,7 @@ import { SystemControl } from "../../systemcontrol"
 
 export default function ControlPanel() {
   return (
-    <box className="ControlPanel" vertical spacing={8} hexpand>
+    <box className="ControlPanel" vertical spacing={6} hexpand>
       <box className="notification-section">
         <NotificationCenterWidget />
       </box>

@@ -25,5 +25,6 @@ box.ControlPanel {
 .control-panel-button {
     &.active {
         background: $bg-active;
+        border-radius: $radius-md;
     }
 }

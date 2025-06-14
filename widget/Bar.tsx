@@ -1,7 +1,5 @@
 import { App, Astal, Gtk, Gdk } from "astal/gtk3";
 import { bind } from "astal";
-import { GLib } from "astal";
-import Tray from "gi://AstalTray";
 import Workspaces from "./workspaces";
 import WindowTitle from "./windowtitle";
 import KeyboardSwitcher from "./keyboardswitcher";
@@ -9,7 +7,7 @@ import { AudioButton } from "./audiocontrols";
 import TimeDisplay from "./timedisplay";
 import ControlPanelButton from "./controlpanel";
 import { NotificationButton } from "./notifications";
-import SystemTray from "./systemtray";
+import SystemTray, { TrayService } from "./systemtray";
 
 function LeftSection() {
   return (
@@ -20,7 +18,7 @@ function LeftSection() {
       <box className="bar-item workspaces">
         <Workspaces />
       </box>
-      <box className="bar-item system-tray">
+      <box className="bar-item system-tray" visible={bind(TrayService, "items").as(items => items.length > 0)}>
         <SystemTray />
       </box>
     </box>
@@ -46,11 +44,16 @@ function RightSection() {
   );
 }
 
-export default function Bar(gdkmonitor: Gdk.Monitor) {
+interface BarProps {
+  gdkmonitor: Gdk.Monitor;
+}
+
+export default function Bar({ gdkmonitor }: BarProps) {
   const { TOP, BOTTOM, LEFT, RIGHT } = Astal.WindowAnchor;
 
   return (
     <window
+      name="Bar"
       className="Bar"
       gdkmonitor={gdkmonitor}
       exclusivity={Astal.Exclusivity.EXCLUSIVE}

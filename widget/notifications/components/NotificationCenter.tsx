@@ -2,7 +2,8 @@ import { bind } from "astal";
 import { Gtk } from "astal/gtk3";
 import Notifd from "gi://AstalNotifd";
 import Notification from "./Notification";
-import { filterVisibleNotifications } from "../Service";
+import NotificationGroup from "./NotificationGroup";
+import { filterVisibleNotifications, processNotificationsForGrouping, NOTIFICATION_GROUP_THRESHOLD } from "../Service";
 import { notificationCenter } from "../Service";
 
 interface NotificationCenterProps {
@@ -13,7 +14,7 @@ export default function NotificationCenter({ showCloseButton = true }: Notificat
   const notifd = Notifd.get_default();
 
   return (
-    <box className="notification-center" vertical spacing={8} vexpand hexpand>
+    <box className={`notification-center ${showCloseButton ? 'floating' : ''}`} vertical spacing={8} vexpand hexpand>
       <box className="notification-header" hexpand>
         <label
           label="Notifications"
@@ -64,7 +65,7 @@ export default function NotificationCenter({ showCloseButton = true }: Notificat
         vscroll={Gtk.PolicyType.AUTOMATIC}
         maxContentHeight={400}
       >
-        <box vertical spacing={4} marginLeft={10} marginRight={10}>
+        <box vertical spacing={4} className="notification-list-content">
           {bind(notifd, "notifications").as((notifications) => {
             const visibleNotifications =
               filterVisibleNotifications(notifications);
@@ -88,9 +89,34 @@ export default function NotificationCenter({ showCloseButton = true }: Notificat
               );
             }
 
-            return visibleNotifications.map((notification) => (
-              <Notification notification={notification} isInCenter={true} />
-            ));
+            // Process notifications for grouping (threshold: 3)
+            const { groupedApps, ungroupedNotifications } = 
+              processNotificationsForGrouping(visibleNotifications, NOTIFICATION_GROUP_THRESHOLD);
+
+            const elements: any[] = [];
+
+            // Add grouped notifications first
+            Object.entries(groupedApps).forEach(([appName, appNotifications]) => {
+              elements.push(
+                <NotificationGroup
+                  appName={appName}
+                  notifications={appNotifications}
+                  isInCenter={true}
+                />
+              );
+            });
+
+            // Add ungrouped notifications
+            ungroupedNotifications.forEach((notification) => {
+              elements.push(
+                <Notification 
+                  notification={notification} 
+                  isInCenter={true} 
+                />
+              );
+            });
+
+            return elements;
           })}
         </box>
       </scrollable>

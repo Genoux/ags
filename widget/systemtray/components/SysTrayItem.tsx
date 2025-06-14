@@ -1,23 +1,19 @@
-import { getItemName, focusWindow } from "../Service"
-import { GLib } from "astal"
+import { getItemName } from "../Service"
 
-// UI Component - Individual Tray Item
 export default function SysTrayItem({ item }: { item: any }) {
-  const appName = getItemName(item)
-  const tooltipText = item.tooltip_markup || appName || "Tray Item"
-  
   return (
     <button
       className="systray-item"
-      tooltip_markup={tooltipText}
-      onClicked={async () => {
-       await focusWindow(appName)
+      tooltip_text={item.tooltip_markup}
+      onClicked={() => {
+        try {
+          item.activate(0, 0)
+        } catch (error) {
+          console.error("Failed to activate tray item:", error)
+        }
       }}
     >
-      <icon 
-          icon={appName}
-          className="tray-icon" 
-        />
+      <icon gicon={item.gicon} />
     </button>
   )
-} 
+}
