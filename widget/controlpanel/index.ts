@@ -1,4 +1,2 @@
 // ControlPanel Widget - Component Pattern
-import ControlPanelButton from "./components/ControlPanelButton"
-
-export default ControlPanelButton
+export { default as ControlPanelButton } from "./components/ControlPanelButton"

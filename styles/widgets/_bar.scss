@@ -25,10 +25,8 @@ window.Bar {
 
 // Common bar item styling
 .bar-item {
-  border-radius: $radius-lg;
-  border: $border-width solid $border-primary;
-  background: $bg-primary;
-  box-shadow: 0 0 $spacing-2xl $shadow-tertiary;
+  border-radius: $radius-md;
+  background: $bg-transparent;
 }
 
 // Left Section - Control panel and workspaces
@@ -69,7 +67,7 @@ window.Bar {
 // Theme - Common elements and typography
 // =============================================================================
 
-window.Bar {
+window.Bar {  
   button {
     all: unset;
   }

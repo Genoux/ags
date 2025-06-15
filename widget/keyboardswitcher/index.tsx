@@ -1,4 +1,1 @@
-// KeyboardSwitcher Widget - Universal Pattern
-import KeyboardSwitcher from "./components/KeyboardSwitcher"
-
-export default KeyboardSwitcher
+export { default as KeyboardSwitcher } from "./components/KeyboardSwitcher"

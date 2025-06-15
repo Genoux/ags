@@ -4,7 +4,8 @@ import Notifd from "gi://AstalNotifd";
 import Notification from "./Notification";
 import NotificationGroup from "./NotificationGroup";
 import { filterVisibleNotifications, processNotificationsForGrouping, NOTIFICATION_GROUP_THRESHOLD } from "../Service";
-import { notificationCenter } from "../Service";
+
+import { getCurrentWindowClose } from "../../utils/WindowHelper"
 
 interface NotificationCenterProps {
   showCloseButton?: boolean;
@@ -45,13 +46,13 @@ export default function NotificationCenter({ showCloseButton = true }: Notificat
               className="close-btn"
               halign={Gtk.Align.END}
               onClicked={() => {
-                if (notificationCenter.isVisible.get()) {
-                  notificationCenter.window.visible = false
-                  notificationCenter.isVisible.set(false)
+                const closeWindow = getCurrentWindowClose()
+                if (closeWindow) {
+                  closeWindow() // Properly closes window + cleans up click catcher
                 }
               }}
             >
-              <label label="×" />
+              <icon icon="close" />
             </button>
           )}
         </box>

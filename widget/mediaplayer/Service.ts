@@ -62,6 +62,22 @@ export function getMostRecentPlayer(players: Mpris.Player[]): Mpris.Player | nul
     return mostRecentPlayer
 }
 
+
+// Utility Functions
+export function lengthStr(length: number) {
+    const hours = Math.floor(length / 3600);
+    const min = Math.floor((length % 3600) / 60);
+    const sec = Math.floor(length % 60);
+    const sec0 = sec < 10 ? "0" : "";
+    const min0 = hours > 0 && min < 10 ? "0" : "";
+  
+    if (hours > 0) {
+      return `${hours}:${min0}${min}:${sec0}${sec}`;
+    } else {
+      return `${min}:${sec0}${sec}`;
+    }
+  }
+
 // Create a variable that tracks if there are any players available
 const mpris = Mpris.get_default()
 export const hasMediaPlayers = bind(mpris, "players").as(players => players.length > 0)

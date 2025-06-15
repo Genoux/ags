@@ -47,6 +47,7 @@ $bg-quaternary: theme-alpha(theme-darken(10%), 0.45);  // Modal/overlay backgrou
 $bg-hover: theme-alpha($theme-white, 0.03);            // Very subtle hover state
 $bg-active: theme-alpha($theme-white, 0.05);           // Very subtle active state
 $bg-disabled: theme-alpha($theme-base, 0.25);          // Disabled elements
+$bg-transparent: theme-alpha($theme-base, 0.4); 
 
 // Text colors - white with different opacities
 $text-primary: theme-alpha($theme-white, 0.9);         // Primary text

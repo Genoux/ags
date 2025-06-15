@@ -6,25 +6,38 @@
 // =============================================================================
 
 window.control-panel-window {
-    @include window-base;
+  @include window-base;
 }
 
 box.ControlPanel {
-    font-family: $font-family-primary;
-    background-color: $bg-primary;
-    border-radius: $radius-lg;
-    border: $border-width solid $border-tertiary;
-    padding: $spacing-md;
-    margin: $spacing-md;
-    
-    box.widget {
-        @include section-container;
-    }
-} 
+  font-family: $font-family-primary;
+  background-color: $bg-primary;
+  border: $border-width solid $border-tertiary;
+  border-radius: $radius-xl;
+  padding: $spacing-md;
+  margin: $spacing-md $spacing-sm;
+  box-shadow: 0 0 $spacing-2xl $shadow-tertiary;
 
-.control-panel-button {
+  box.widget {
+    @include section-container;
+  }
+}
+
+box.control-panel-button {
+  button {
+    border-radius: $radius-md;
+    background: $bg-transparent;
+    transition: all $transition-normal;
+    min-width: 32px;
+
     &.active {
-        background: $bg-active;
-        border-radius: $radius-md;
+      background-color: $bg-tertiary;
+      &:hover {
+        background-color: $bg-tertiary;
+      }
     }
+    &:hover {
+      background-color: $bg-secondary;
+    }
+  }
 }

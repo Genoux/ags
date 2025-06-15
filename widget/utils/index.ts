@@ -1,1 +1,1 @@
-export { createWindow, createSimpleWindow } from "./WindowHelper" 
+export { createWindow } from "./WindowHelper"

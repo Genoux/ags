@@ -128,6 +128,7 @@ export const notificationCenter = createWindow({
     className: "notification-center-window",
     content: NotificationCenter({ showCloseButton: true }),
     anchor: Astal.WindowAnchor.TOP | Astal.WindowAnchor.RIGHT | Astal.WindowAnchor.BOTTOM,
+    autoClose: true,
 })
 
 // Subscribe to visibility changes to dismiss popups when center opens
@@ -136,4 +137,9 @@ notificationCenter.isVisible.subscribe((visible) => {
         // Dismiss all popup notifications when notification center opens
         dismissAllPopups()
     }
-}) 
+})
+
+// Helper function to check if notification center is open
+export function isNotificationCenterOpen(): boolean {
+    return notificationCenter.isVisible.get()
+} 

@@ -1,4 +1,1 @@
-// Workspaces Widget - Universal Pattern
-import Workspaces from "./components/Workspaces"
-
-export default Workspaces
+export { default as Workspaces } from "./components/Workspaces"

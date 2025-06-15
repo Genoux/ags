@@ -1,29 +1,17 @@
 import { Astal, Gtk } from "astal/gtk3";
 import Mpris from "gi://AstalMpris";
 import { bind, Variable } from "astal";
+import Hyprland from "gi://AstalHyprland"
+import { toggleControlPanel } from "../../controlpanel/Service"
 
-// Import business logic from Service
 import {
   trackPlayerInteraction,
   setupPlaybackMonitoring,
   getMostRecentPlayer,
   globalUpdateTrigger,
+  lengthStr,
 } from "../Service";
 
-// Utility Functions
-function lengthStr(length: number) {
-  const hours = Math.floor(length / 3600);
-  const min = Math.floor((length % 3600) / 60);
-  const sec = Math.floor(length % 60);
-  const sec0 = sec < 10 ? "0" : "";
-  const min0 = hours > 0 && min < 10 ? "0" : "";
-
-  if (hours > 0) {
-    return `${hours}:${min0}${min}:${sec0}${sec}`;
-  } else {
-    return `${min}:${sec0}${sec}`;
-  }
-}
 
 // Pure UI Components
 export function TrackInfo({ player }: { player: Mpris.Player }) {
@@ -231,6 +219,7 @@ export function MediaControls({
 // MediaPlayer component that can be used in JSX
 export default function MediaPlayer() {
   const mpris = Mpris.get_default();
+  const hypr = Hyprland.get_default();
 
   // Set up monitoring for player list changes
   mpris.connect("notify::players", () => {
@@ -256,11 +245,23 @@ export default function MediaPlayer() {
         );
 
         return (
+          <eventbox
+            onButtonPressEvent={() => {
+              const appClass = activePlayer.entry;
+              try {
+                hypr.dispatch("focuswindow", `class:${appClass}`);
+                toggleControlPanel();
+              } catch (error) {
+                console.log("No app class found for player", error);
+              }
+            }}
+          >
           <box 
             className="MediaPlayer" 
             heightRequest={100} 
             spacing={6}
             css={coverArtBackground} 
+          
           >
             <box className="media-content" vertical hexpand spacing={6}>
               <TrackInfo player={activePlayer} />
@@ -274,6 +275,7 @@ export default function MediaPlayer() {
               />
             </box>
           </box>
+          </eventbox>
         );
       })}
     </box>

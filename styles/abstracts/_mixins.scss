@@ -8,18 +8,24 @@
 @mixin button-base {
   all: unset;
   padding: $spacing-sm $spacing-md;
-  border-radius: $radius-sm;
-  transition: all $transition-normal;
+  border-radius: $radius-md;
   color: $text-primary;
   font-size: $font-size-sm;
+  background-color: transparent;
+  transition: all $transition-normal;
   
+  &.active {
+    transition: all $transition-normal;
+    background-color: $bg-secondary;
+    &:hover {
+      background-color: $bg-secondary;
+    }
+  }
+
   &:hover {
     background-color: $bg-hover;
   }
-  
-  &:active {
-    background-color: $bg-active;
-  }
+
 }
 
 // Window base styling - Used by multiple popup windows
@@ -54,9 +60,24 @@
   }
 } 
 
-
 // Global mixin class
 .separator {
   background-color: $border-primary;
   min-height: 1px;
+}
+
+// Global tooltip styling - applies to ALL tooltips
+tooltip {
+  background-color: rgba($bg-primary, 0.95); // 95% opacity
+  color: $text-primary;
+  font-size: $font-size-sm;
+  padding: $spacing-xs;
+  border-radius: $radius-lg;
+  border: 1px solid rgba($border-tertiary, 0.1);
+  box-shadow: 
+  0 4px 12px rgba(0, 0, 0, 0.15),
+  0 0 20px rgba(0, 0, 0, 0.05);
+
+  // Better text styling
+  font-weight: 500;
 }

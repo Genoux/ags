@@ -1,4 +1,5 @@
 import { bind } from "astal"
+import { Astal, Gtk } from "astal/gtk3";
 import { controlPanelVisible, toggleControlPanel } from "../Service"
 
 export default function ControlPanelButton() {
@@ -9,9 +10,8 @@ export default function ControlPanelButton() {
         `control-panel-button ${visible ? 'active' : ''}`
       )}
       onClicked={toggleControlPanel}
-      tooltip_text="Control Panel"
     >
-      <icon icon="view-grid-symbolic" />
+        <icon icon="document-properties-symbolic" />
     </button>
   )
 } 

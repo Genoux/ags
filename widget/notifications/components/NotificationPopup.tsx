@@ -106,6 +106,7 @@ export default function NotificationPopup(gdkmonitor: Gdk.Monitor) {
             anchor={Astal.WindowAnchor.BOTTOM | Astal.WindowAnchor.RIGHT}
             keymode={Astal.Keymode.NONE}
             layer={Astal.Layer.OVERLAY}
+            exclusivity={Astal.Exclusivity.NORMAL}
             application={App}
             marginRight={8}
             marginBottom={4}

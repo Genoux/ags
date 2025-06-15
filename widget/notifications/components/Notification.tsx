@@ -13,7 +13,6 @@ export default function Notification({
   const time = GLib.DateTime.new_from_unix_local(notification.time).format("%H:%M") || "";
 
   const actions = notification.get_actions?.() || [];
-
   return (
     <eventbox
       className="notification"
@@ -35,8 +34,7 @@ export default function Notification({
       <box className="notification-container" vertical>
         {/* Notification Header */}
         <box className="notification-header" spacing={4}>
-          <icon className="app-icon" icon={notification.app_icon} />
-
+          <icon className="app-icon" icon={notification.app_icon || notification.app_name} />
           <label
             className="app-name"
             label={notification.app_name || "Unknown App"}

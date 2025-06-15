@@ -26,7 +26,7 @@ export default function Workspaces() {
                                 return classes.join(" ")
                             })}
                             onClicked={() => ws.focus()}
-                            tooltip_text={`Workspace ${ws.id}${isOccupied ? ` (${clientCount} windows)` : ""}`}
+                            // tooltip_text={`Workspace ${ws.id}${isOccupied ? ` (${clientCount} windows)` : ""}`}
                         >
                             {bind(hypr, "focusedWorkspace").as(focused => {
                                 const isFocused = focused?.id === ws.id

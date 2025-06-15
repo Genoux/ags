@@ -22,22 +22,3 @@ box  {
     font-weight: inherit;
 }
 
-// Global tooltip styling - applies to ALL tooltips
-tooltip {
-    background-color: rgba($bg-primary, 0.5); // 95% opacity
-    color: $text-primary;
-    font-size: $font-size-sm;
-    padding: $spacing-sm $spacing-md;
-    border-radius: $radius-lg;
-    border: 1px solid rgba($border-secondary, 0.1);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    opacity: 0.95;
-    
-    // Smooth fade in/out animation
-    transition: opacity 200ms ease-in-out;
-    
-    // Better text styling
-    font-weight: 500;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-

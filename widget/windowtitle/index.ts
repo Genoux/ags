@@ -1,4 +1,1 @@
-// WindowTitle Widget - Universal Pattern
-import WindowTitle from "./components/WindowTitle"
-
-export default WindowTitle 
+export { default as WindowTitle } from "./components/WindowTitle"
